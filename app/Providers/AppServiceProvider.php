@@ -7,7 +7,6 @@ namespace App\Providers;
 use App\Models\User;
 use EchoLabs\Prism\Prism;
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\Event;
 use Knuckles\Scribe\Scribe;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\Sanctum;
@@ -16,12 +15,15 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Vite;
+use Illuminate\Support\Facades\Event;
 use EchoLabs\Prism\Facades\PrismServer;
 use EchoLabs\Prism\Text\PendingRequest;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Cache\RateLimiting\Limit;
+use SocialiteProviders\Facebook\Provider;
 use Illuminate\Support\Facades\RateLimiter;
+use SocialiteProviders\Manager\SocialiteWasCalled;
 use EchoLabs\Prism\Enums\Provider as PrismProvider;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
@@ -61,8 +63,8 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureScribeDocumentation();
         $this->configureRateLimiting();
 
-        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
-            $event->extendSocialite('facebook', \SocialiteProviders\Facebook\Provider::class);
+        Event::listen(function (SocialiteWasCalled $event) {
+            $event->extendSocialite('facebook', Provider::class);
         });
     }
 
