@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Models\User;
 use EchoLabs\Prism\Prism;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Event;
 use Knuckles\Scribe\Scribe;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\Sanctum;
@@ -59,6 +60,10 @@ final class AppServiceProvider extends ServiceProvider
         $this->configurePrisms();
         $this->configureScribeDocumentation();
         $this->configureRateLimiting();
+
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+            $event->extendSocialite('facebook', \SocialiteProviders\Facebook\Provider::class);
+        });
     }
 
     /**

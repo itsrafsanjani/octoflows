@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Enums\ChannelPlatformKey;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\User\OauthController;
@@ -37,4 +40,15 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::resource('/subscriptions', SubscriptionController::class)
         ->names('subscriptions')
         ->only(['index', 'create', 'store', 'show']);
+
+    // Social Media Post Scheduling Routes
+    Route::get('/channels/{provider}/redirect', [ChannelController::class, 'redirect'])
+        ->whereIn('provider', array_column(ChannelPlatformKey::cases(), 'value'))
+        ->name('channels.redirect');
+    Route::get('/channels/{provider}/callback', [ChannelController::class, 'callback'])
+        ->name('channels.callback');
+
+    Route::resource('/channels', ChannelController::class);
+
+    Route::resource('/posts', PostController::class);
 });

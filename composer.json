@@ -11,6 +11,7 @@
   "license": "MIT",
   "require": {
     "php": "^8.3",
+    "abraham/twitteroauth": "^7.0",
     "echolabsdev/prism": "^0.26.0",
     "filament/filament": "^3.2",
     "inertiajs/inertia-laravel": "^2.0",
@@ -24,6 +25,7 @@
     "pinkary-project/type-guard": "^0.1.0",
     "resend/resend-php": "^0.14.0",
     "sentry/sentry-laravel": "^4.10",
+    "socialiteproviders/facebook": "^4.1",
     "spatie/laravel-medialibrary": "^11.15",
     "spatie/laravel-sitemap": "^7.3",
     "symfony/mailer": "~7.1.0",

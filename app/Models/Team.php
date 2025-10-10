@@ -78,6 +78,26 @@ final class Team extends JetstreamTeam
     }
 
     /**
+     * Get the channels for the team.
+     *
+     * @return HasMany<Channel, covariant $this>
+     */
+    public function channels(): HasMany
+    {
+        return $this->hasMany(Channel::class);
+    }
+
+    /**
+     * Get the posts for the team.
+     *
+     * @return HasMany<Post, covariant $this>
+     */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
