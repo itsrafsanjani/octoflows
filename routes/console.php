@@ -9,3 +9,6 @@ Schedule::daily()
     ->group(fn () => [
         Schedule::command('sitemap:generate'),
     ]);
+
+Schedule::everyMinute()
+    ->command('posts:publish-scheduled');
