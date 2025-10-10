@@ -24,6 +24,7 @@
     "pinkary-project/type-guard": "^0.1.0",
     "resend/resend-php": "^0.14.0",
     "sentry/sentry-laravel": "^4.10",
+    "spatie/laravel-medialibrary": "^11.15",
     "spatie/laravel-sitemap": "^7.3",
     "symfony/mailer": "~7.1.0",
     "tightenco/ziggy": "^2.0"
