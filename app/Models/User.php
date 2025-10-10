@@ -154,6 +154,26 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     }
 
     /**
+     * Get the channels for the user.
+     *
+     * @return HasMany<Channel, covariant $this>
+     */
+    public function channels(): HasMany
+    {
+        return $this->hasMany(Channel::class);
+    }
+
+    /**
+     * Get the posts for the user.
+     *
+     * @return HasMany<Post, covariant $this>
+     */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    /**
      * Configure the panel access.
      */
     public function canAccessPanel(Panel $panel): bool
