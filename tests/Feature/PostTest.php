@@ -60,6 +60,7 @@ test('user can create post with channels', function () {
     ]);
 
     $postData = [
+        'post_type' => 'text',
         'content' => 'Test post content',
         'channels' => $channels->pluck('id')->toArray(),
         'is_scheduled' => false,
@@ -92,6 +93,7 @@ test('user can create scheduled post', function () {
     $futureDate = now()->addHours(2);
 
     $postData = [
+        'post_type' => 'text',
         'content' => 'Scheduled post content',
         'channels' => [$channel->id],
         'is_scheduled' => true,
@@ -125,6 +127,7 @@ test('user can create post with media', function () {
     $file = UploadedFile::fake()->image('test.jpg');
 
     $postData = [
+        'post_type' => 'visual',
         'content' => 'Post with media',
         'channels' => [$channel->id],
         'media' => [$file],
@@ -151,6 +154,7 @@ test('post requires content', function () {
 
     actingAs($user)
         ->post(route('posts.store'), [
+            'post_type' => 'text',
             'content' => '',
             'channels' => [$channel->id],
             'is_scheduled' => false,
@@ -164,6 +168,7 @@ test('post requires at least one channel', function () {
 
     actingAs($user)
         ->post(route('posts.store'), [
+            'post_type' => 'text',
             'content' => 'Test content',
             'channels' => [],
             'is_scheduled' => false,
@@ -208,4 +213,61 @@ test('post has many channels', function () {
     $post->channels()->attach($channels->pluck('id'));
 
     expect($post->channels)->toHaveCount(3);
+});
+
+test('is_scheduled field is not inserted into database', function () {
+    $user = User::factory()->withPersonalTeam()->create();
+    $team = $user->currentTeam;
+
+    $channel = Channel::factory()->create([
+        'team_id' => $team->id,
+        'user_id' => $user->id,
+    ]);
+
+    $postData = [
+        'post_type' => 'text',
+        'content' => 'Test for is_scheduled field',
+        'channels' => [$channel->id],
+        'is_scheduled' => false,
+        'published_at' => now()->toISOString(),
+    ];
+
+    actingAs($user)
+        ->post(route('posts.store'), $postData)
+        ->assertRedirect(route('posts.index'));
+
+    $post = Post::where('content', 'Test for is_scheduled field')->first();
+
+    // Verify the post was created successfully
+    expect($post)->not->toBeNull();
+
+    // Verify is_scheduled is not in the database columns
+    expect($post->getAttributes())->not->toHaveKey('is_scheduled');
+});
+
+test('channels are properly attached when creating post', function () {
+    $user = User::factory()->withPersonalTeam()->create();
+    $team = $user->currentTeam;
+
+    $channels = Channel::factory()->count(3)->create([
+        'team_id' => $team->id,
+        'user_id' => $user->id,
+    ]);
+
+    $postData = [
+        'post_type' => 'text',
+        'content' => 'Test for channel attachment',
+        'channels' => $channels->pluck('id')->toArray(),
+        'is_scheduled' => false,
+        'published_at' => now()->toISOString(),
+    ];
+
+    actingAs($user)
+        ->post(route('posts.store'), $postData)
+        ->assertRedirect(route('posts.index'));
+
+    $post = Post::where('content', 'Test for channel attachment')->first();
+
+    expect($post->channels)->toHaveCount(3);
+    expect($post->channels->pluck('id')->toArray())->toEqual($channels->pluck('id')->toArray());
 });

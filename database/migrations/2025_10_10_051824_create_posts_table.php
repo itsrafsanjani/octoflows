@@ -21,6 +21,10 @@ return new class extends Migration
             $table->json('media')->nullable();
             $table->dateTime('published_at');
             $table->boolean('is_picked_by_job')->default(false)->index();
+            $table->string('post_type')->default('text')->comment('text, visual, video');
+            $table->string('ai_tone')->nullable();
+            $table->boolean('is_draft')->default(false);
+            $table->json('platform_configs')->nullable()->comment('Platform-specific configurations');
             $table->timestamps();
         });
     }
