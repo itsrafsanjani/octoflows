@@ -32,13 +32,20 @@ final class PostController extends Controller
     {
         $channels = auth()->user()->currentTeam->channels()->get()->map(function ($channel) {
             return [
-                'value' => $channel->id,
+                'id' => $channel->id,
+                'name' => $channel->name,
+                'platform' => $channel->platform,
+                'type' => $channel->type,
                 'label' => $channel->title,
             ];
         });
 
+        // Group channels by platform
+        $groupedChannels = $channels->groupBy('platform');
+
         return inertia('Posts/Create', [
             'channels' => $channels,
+            'groupedChannels' => $groupedChannels,
         ]);
     }
 
@@ -49,6 +56,8 @@ final class PostController extends Controller
      */
     public function store(StorePostRequest $request): RedirectResponse
     {
+        $validated = $request->validated();
+
         $media = [];
         if (is_array($request->media)) {
             foreach ($request->media as $index => $file) {
@@ -62,18 +71,27 @@ final class PostController extends Controller
 
         DB::beginTransaction();
 
+        $isDraft = $request->boolean('is_draft', false);
+        $isScheduled = $request->boolean('is_scheduled', false);
+
+        $channels = $validated['channels'];
+        unset($validated['channels'], $validated['is_scheduled']);
+
         $post = auth()->user()->currentTeam->posts()->create([
             'user_id' => auth()->id(),
-            'content' => $request->input('content'),
+            ...$validated,
             'media' => $media,
-            'published_at' => $request->input('is_scheduled') ? $request->input('published_at') : now(),
+            'published_at' => $isScheduled ? $validated['published_at'] : now(),
+            'is_draft' => $isDraft,
         ]);
 
-        $post->channels()->attach($request->input('channels'));
+        $post->channels()->attach($channels);
 
         DB::commit();
 
-        return redirect()->route('posts.index')->banner('Post created successfully.');
+        $message = $isDraft ? 'Draft saved successfully.' : 'Post created successfully.';
+
+        return redirect()->route('posts.index')->banner($message);
     }
 
     /**

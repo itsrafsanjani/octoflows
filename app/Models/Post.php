@@ -16,10 +16,14 @@ final class Post extends Model
     protected $fillable = [
         'team_id',
         'user_id',
+        'post_type',
+        'ai_tone',
         'content',
         'media',
+        'platform_configs',
         'published_at',
         'is_picked_by_job',
+        'is_draft',
     ];
 
     public function team(): BelongsTo
@@ -41,8 +45,10 @@ final class Post extends Model
     {
         return [
             'media' => 'array',
+            'platform_configs' => 'array',
             'published_at' => 'datetime',
             'is_picked_by_job' => 'boolean',
+            'is_draft' => 'boolean',
         ];
     }
 }
