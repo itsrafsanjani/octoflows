@@ -1,0 +1,107 @@
+# Modern Laravel SaaS Starter Kit
+✨ Using PHP 8.3+, Laravel 11, Inertia 2.0 and Tailwind CSS 4+
+Ship faster production-ready applications 10x faster with starter kit powered by Laravel Jetstream, Inertia V2, and Shadcn/ui.
+
+[View Demo](https://larasonic.com/dashboard) [Github](https://github.com/shipfastlabs/larasonic-react)
+
+Trusted by developers worldwide
+
+## Features ✨
+
+Everything you need to ship faste to production without any hassle.
+
+🚀
+
+### 10x Dev Experience
+
+Ship faster with opinionated Laravel Pint, maximum PHPStan level, and Rector for enhanced code quality and developer productivity.
+
+🐳
+
+### Production Docker Ready
+
+Optimized Docker images with Laravel Octane and Sail for lightning-fast development and deployment.
+
+🔑
+
+### Advanced Authentication
+
+Complete authentication system with social login, and role-based access control.
+
+💳
+
+### Payment Ready
+
+Integrated Laravel Cashier for subscription billing and payment processing so you can focus on building your product.
+
+🌐
+
+### API Ready
+
+RESTful API endpoints with Laravel Sanctum authentication and comprehensive documentation.
+
+🎨
+
+### Customizable UI
+
+Built with shadcn/ui components, making UI customization a breeze. Easily modify themes, styles, and components to match your brand.
+
+🧠
+
+### AI Integration Ready
+
+Pre-configured LLM integrations for OpenAI, Anthropic, and more. Build AI-powered features into your app with minimal setup.
+
+📊
+
+### FilamentPHP Admin
+
+Beautiful admin panel powered by FilamentPHP with CRUD operations, charts, and detailed analytics.
+
+✨
+
+### Evolving Features
+
+This is just the beginning. Regular updates bring new features, integrations, and improvements to supercharge your development.
+
+[Documentation](https://docs.larasonic.com) [Roadmap](https://github.com/shipfastlabs/larasonic-react/discussions/categories/roadmap)
+
+## Proudly Open Source 🤑
+
+Larasonic is and will always be open source. No hidden fees, no premium features.
+
+#### $0
+
+Free Forever
+
+[Get Started](https://larasonic.com/dashboard)
+
+Want to support the development?
+
+[Sponsor](https://github.com/sponsors/pushpak1300) [Follow Me](https://x.com/pushpak1300)
+
+## Frequently Asked Questions
+
+### Is Larasonic really free?
+
+Yes! Larasonic is completely free and open source under the MIT license. You can use it for personal or commercial projects without any restrictions. Feel free to star the repo for showing your intrest.
+
+### How can I contribute?
+
+### Why should I sponsor?
+
+## Ready to ship faster?
+
+You're already blazing fast with Laravel.
+
+Larasonic is about to make your shipping speed supersonic. 🚀
+
+[View on GitHub](https://github.com/shipfastlabs/larasonic-react)
+
+$ git clone https://github.com/shipfastlabs/larasonic-react
+
+$ cd larasonic && composer install
+
+$ ./vendor/bin/sail up
+
+$ ./vendor/bin/sail composer setup
