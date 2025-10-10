@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use Exception;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Inertia\Response;
 use App\Enums\ChannelType;
 use Inertia\ResponseFactory;
@@ -32,9 +30,18 @@ final class ChannelController extends Controller
     public function redirect($provider)
     {
         return match ($provider) {
-            'facebook' => Socialite::driver($provider)->redirect(),
-            'twitter' => Socialite::driver($provider)->redirect(),
-            'linkedin' => Socialite::driver($provider)->redirect(),
+            'facebook' => Socialite::driver($provider)
+                ->stateless()
+                ->scopes([
+                    'pages_show_list',
+                    'pages_manage_posts',
+                    'pages_manage_engagement',
+                    'business_management',
+                    'read_insights',
+                ])
+                ->redirect(),
+            'twitter' => Socialite::driver($provider)->stateless()->redirect(),
+            'linkedin' => Socialite::driver($provider)->stateless()->redirect(),
             default => throw new Exception('Invalid provider.'),
         };
     }
@@ -44,19 +51,28 @@ final class ChannelController extends Controller
      */
     public function callback($provider)
     {
-        $user = Socialite::driver($provider)->user();
+        try {
+            $user = Socialite::driver($provider)->stateless()->user();
 
-        match ($provider) {
-            'facebook' => [
-                $this->getFacebookPages($user->token),
-                $this->getFacebookGroups($user->token),
-                $this->getInstagramAccounts($user->token),
-            ],
-            'twitter' => $this->getTwitterAccount($user),
-            'linkedin' => dd($user),
-        };
+            match ($provider) {
+                'facebook' => [
+                    $this->getFacebookPages($user->token),
+                    $this->getFacebookGroups($user->token),
+                    $this->getInstagramAccounts($user->token),
+                ],
+                'twitter' => $this->getTwitterAccount($user),
+                'linkedin' => dd($user),
+            };
 
-        return to_route('channels.index');
+            return to_route('channels.index');
+        } catch (Exception $e) {
+            logger()->error('OAuth callback error', [
+                'provider' => $provider,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
     }
 
     /**
@@ -64,17 +80,29 @@ final class ChannelController extends Controller
      */
     public function getFacebookPages($accessToken)
     {
-        $response = Http::get('https://graph.facebook.com/me/accounts', [
+        $response = Http::get('https://graph.facebook.com/v21.0/me/accounts', [
             'access_token' => $accessToken,
+            'fields' => 'id,name,access_token,category,tasks',
         ]);
 
-        logger($response->json());
-
         if ($response->failed()) {
-            throw new Exception($response->json()['error']['message'] ?? 'Failed to get Facebook pages.');
+            $error = $response->json()['error']['message'] ?? 'Failed to get Facebook pages.';
+            logger()->error('Facebook Pages API error', [
+                'error' => $error,
+                'response' => $response->json(),
+            ]);
+            throw new Exception($error);
         }
 
-        $pages = collect($response->json()['data']);
+        $pages = collect($response->json()['data'] ?? []);
+
+        if ($pages->isEmpty()) {
+            logger()->warning('No Facebook pages found for user', [
+                'user_id' => auth()->id(),
+            ]);
+
+            return true;
+        }
 
         $pages->each(function ($page) {
             auth()->user()->currentTeam->channels()->updateOrCreate([
@@ -96,15 +124,29 @@ final class ChannelController extends Controller
      */
     public function getFacebookGroups($accessToken)
     {
-        $response = Http::get('https://graph.facebook.com/me/groups', [
+        $response = Http::get('https://graph.facebook.com/v21.0/me/groups', [
             'access_token' => $accessToken,
+            'fields' => 'id,name,administrator',
         ]);
 
         if ($response->failed()) {
-            throw new Exception($response->json()['error']['message'] ?? 'Failed to get Facebook groups.');
+            $error = $response->json()['error']['message'] ?? 'Failed to get Facebook groups.';
+            logger()->error('Facebook Groups API error', [
+                'error' => $error,
+                'response' => $response->json(),
+            ]);
+            throw new Exception($error);
         }
 
-        $groups = collect($response->json()['data']);
+        $groups = collect($response->json()['data'] ?? []);
+
+        if ($groups->isEmpty()) {
+            logger()->info('No Facebook groups found for user', [
+                'user_id' => auth()->id(),
+            ]);
+
+            return true;
+        }
 
         $groups->each(function ($group) use ($accessToken) {
             auth()->user()->currentTeam->channels()->updateOrCreate([
@@ -126,39 +168,69 @@ final class ChannelController extends Controller
      */
     public function getInstagramAccounts($accessToken)
     {
-        $response = Http::get('https://graph.facebook.com/me/accounts', [
+        $response = Http::get('https://graph.facebook.com/v21.0/me/accounts', [
             'access_token' => $accessToken,
+            'fields' => 'id,name,access_token,instagram_business_account',
         ]);
 
         if ($response->failed()) {
-            throw new Exception($response->json()['error']['message'] ?? 'Failed to get Facebook pages which needs to get Instagram accounts.');
+            $error = $response->json()['error']['message'] ?? 'Failed to get Facebook pages which needs to get Instagram accounts.';
+            logger()->error('Instagram Accounts API error', [
+                'error' => $error,
+                'response' => $response->json(),
+            ]);
+            throw new Exception($error);
         }
 
-        $pages = collect($response->json()['data']);
+        $pages = collect($response->json()['data'] ?? []);
 
-        $pages->each(function ($page) use ($accessToken) {
-            $fbPageInstagramAccountResponse = Http::get("https://graph.facebook.com/{$page['id']}", [
-                'access_token' => $accessToken,
-                'fields' => 'instagram_business_account',
+        if ($pages->isEmpty()) {
+            logger()->info('No Facebook pages found for Instagram lookup', [
+                'user_id' => auth()->id(),
             ]);
 
-            if ($fbPageInstagramAccountResponse->failed()) {
-                throw new Exception($fbPageInstagramAccountResponse->json()['error']['message'] ?? 'Failed to get Instagram account.');
-            }
+            return true;
+        }
 
-            $instagramId = $fbPageInstagramAccountResponse->json()['instagram_business_account']['id'] ?? null;
+        $pages->each(function ($page) use ($accessToken) {
+            // Check if Instagram account is already in the response
+            $instagramId = $page['instagram_business_account']['id'] ?? null;
+
+            if (! $instagramId) {
+                // Try to fetch it separately if not included
+                $fbPageInstagramAccountResponse = Http::get("https://graph.facebook.com/v21.0/{$page['id']}", [
+                    'access_token' => $page['access_token'] ?? $accessToken,
+                    'fields' => 'instagram_business_account',
+                ]);
+
+                if ($fbPageInstagramAccountResponse->failed()) {
+                    logger()->warning('Failed to get Instagram account for page', [
+                        'page_id' => $page['id'],
+                        'error' => $fbPageInstagramAccountResponse->json()['error']['message'] ?? 'Unknown error',
+                    ]);
+
+                    return;
+                }
+
+                $instagramId = $fbPageInstagramAccountResponse->json()['instagram_business_account']['id'] ?? null;
+            }
 
             if (! $instagramId) {
                 return;
             }
 
-            $instagramResponse = Http::get("https://graph.facebook.com/$instagramId", [
-                'access_token' => $accessToken,
-                'fields' => 'username',
+            $instagramResponse = Http::get("https://graph.facebook.com/v21.0/$instagramId", [
+                'access_token' => $page['access_token'] ?? $accessToken,
+                'fields' => 'id,username,name,profile_picture_url',
             ]);
 
             if ($instagramResponse->failed()) {
-                throw new Exception($instagramResponse->json()['error']['message'] ?? 'Failed to get Instagram account details.');
+                logger()->warning('Failed to get Instagram account details', [
+                    'instagram_id' => $instagramId,
+                    'error' => $instagramResponse->json()['error']['message'] ?? 'Unknown error',
+                ]);
+
+                return;
             }
 
             $instagramAccount = $instagramResponse->json();
@@ -169,8 +241,8 @@ final class ChannelController extends Controller
                 'user_id' => auth()->id(),
                 'platform' => ChannelPlatform::Instagram,
                 'type' => ChannelType::Account,
-                'name' => $instagramAccount['username'],
-                'access_token' => $page['access_token'],
+                'name' => $instagramAccount['username'] ?? $instagramAccount['name'] ?? 'Instagram Account',
+                'access_token' => $page['access_token'] ?? $accessToken,
             ]);
         });
 
