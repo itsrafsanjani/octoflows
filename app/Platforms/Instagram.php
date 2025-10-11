@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\Http;
 use App\Interfaces\PlatformInterface;
 use Illuminate\Support\Facades\Storage;
 
-final class Instagram implements PlatformInterface
+final readonly class Instagram implements PlatformInterface
 {
     public function __construct(
-        protected Channel $channel,
+        private Channel $channel,
     ) {}
 
     /**
@@ -24,9 +24,7 @@ final class Instagram implements PlatformInterface
      */
     public function post(Post $post): JsonResponse
     {
-        if (count($post->media) < 1) {
-            throw new Exception('Instagram requires at least one media');
-        }
+        throw_if(count($post->media) < 1, new Exception('Instagram requires at least one media'));
 
         $container = Http::post("https://graph.facebook.com/{$this->channel->platform_id}/media", [
             'access_token' => $this->channel->access_token,

@@ -22,8 +22,8 @@ final class ChannelFactory extends Factory
     public function definition(): array
     {
         return [
-            'team_id' => Team::first(),
-            'user_id' => User::first(),
+            'team_id' => Team::query()->first(),
+            'user_id' => User::query()->first(),
             'platform_id' => fake()->numberBetween(1_000_000_000, 9_999_999_999),
             'platform' => fake()->randomElement(['facebook', 'twitter', 'instagram']),
             'type' => fake()->randomElement(['page', 'group', 'account']),

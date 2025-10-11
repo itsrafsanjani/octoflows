@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Http;
 use App\Interfaces\PlatformInterface;
 use Illuminate\Support\Facades\Storage;
 
-final class Facebook implements PlatformInterface
+final readonly class Facebook implements PlatformInterface
 {
     public function __construct(
-        protected Channel $channel,
+        private Channel $channel,
     ) {}
 
     /**
@@ -52,7 +52,7 @@ final class Facebook implements PlatformInterface
     private function uploadSinglePhoto(string $platformId, array $media): string
     {
         $response = Http::attach('attachment', file_get_contents(Storage::path($media['path'])), $media['name'])
-            ->post("https://graph.facebook.com/$platformId/photos", [
+            ->post("https://graph.facebook.com/{$platformId}/photos", [
                 'access_token' => $this->channel->access_token,
                 'published' => false,
             ]);

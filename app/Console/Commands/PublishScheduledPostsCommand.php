@@ -27,14 +27,14 @@ final class PublishScheduledPostsCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         Post::with(['channels'])
             ->where([
                 'is_picked_by_job' => false, // this is to make sure that the post is not already picked by a job
             ])
             ->where('published_at', '<=', now())
-            ->chunk(100, function ($posts) {
+            ->chunk(100, function ($posts): void {
                 foreach ($posts as $post) {
                     $post->update(['is_picked_by_job' => true]);
                     foreach ($post->channels as $channel) {

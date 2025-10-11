@@ -65,20 +65,20 @@ final class ChannelController extends Controller
             };
 
             return to_route('channels.index');
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             logger()->error('OAuth callback error', [
                 'provider' => $provider,
-                'error' => $e->getMessage(),
+                'error' => $exception->getMessage(),
             ]);
 
-            throw $e;
+            throw $exception;
         }
     }
 
     /**
      * @throws Exception
      */
-    public function getFacebookPages($accessToken)
+    public function getFacebookPages($accessToken): bool
     {
         $response = Http::get('https://graph.facebook.com/v21.0/me/accounts', [
             'access_token' => $accessToken,
@@ -104,7 +104,7 @@ final class ChannelController extends Controller
             return true;
         }
 
-        $pages->each(function ($page) {
+        $pages->each(function (array $page): void {
             auth()->user()->currentTeam->channels()->updateOrCreate([
                 'platform_id' => $page['id'],
             ], [
@@ -122,7 +122,7 @@ final class ChannelController extends Controller
     /**
      * @throws Exception
      */
-    public function getFacebookGroups($accessToken)
+    public function getFacebookGroups($accessToken): bool
     {
         $response = Http::get('https://graph.facebook.com/v21.0/me/groups', [
             'access_token' => $accessToken,
@@ -148,7 +148,7 @@ final class ChannelController extends Controller
             return true;
         }
 
-        $groups->each(function ($group) use ($accessToken) {
+        $groups->each(function (array $group) use ($accessToken): void {
             auth()->user()->currentTeam->channels()->updateOrCreate([
                 'platform_id' => $group['id'],
             ], [
@@ -166,7 +166,7 @@ final class ChannelController extends Controller
     /**
      * @throws Exception
      */
-    public function getInstagramAccounts($accessToken)
+    public function getInstagramAccounts($accessToken): bool
     {
         $response = Http::get('https://graph.facebook.com/v21.0/me/accounts', [
             'access_token' => $accessToken,
@@ -192,7 +192,7 @@ final class ChannelController extends Controller
             return true;
         }
 
-        $pages->each(function ($page) use ($accessToken) {
+        $pages->each(function ($page) use ($accessToken): void {
             // Check if Instagram account is already in the response
             $instagramId = $page['instagram_business_account']['id'] ?? null;
 
@@ -219,7 +219,7 @@ final class ChannelController extends Controller
                 return;
             }
 
-            $instagramResponse = Http::get("https://graph.facebook.com/v21.0/$instagramId", [
+            $instagramResponse = Http::get("https://graph.facebook.com/v21.0/{$instagramId}", [
                 'access_token' => $page['access_token'] ?? $accessToken,
                 'fields' => 'id,username,name,profile_picture_url',
             ]);
@@ -252,7 +252,7 @@ final class ChannelController extends Controller
     /**
      * @throws Exception
      */
-    public function getTwitterAccount($user)
+    public function getTwitterAccount($user): bool
     {
         auth()->user()->currentTeam->channels()->updateOrCreate([
             'platform_id' => $user->id,

@@ -63,7 +63,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureScribeDocumentation();
         $this->configureRateLimiting();
 
-        Event::listen(function (SocialiteWasCalled $event) {
+        Event::listen(function (SocialiteWasCalled $event): void {
             $event->extendSocialite('facebook', Provider::class);
         });
     }
