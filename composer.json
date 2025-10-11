@@ -36,7 +36,6 @@
     "driftingly/rector-laravel": "^2.0",
     "fakerphp/faker": "^1.23",
     "knuckleswtf/scribe": "^4.38",
-    "larastan/larastan": "^3.0",
     "laravel/boost": "^1.1",
     "laravel/pail": "^1.1",
     "laravel/pint": "^1.13",
@@ -91,9 +90,6 @@
       "bun install",
       "bun run build",
       "@php artisan scribe:generate"
-    ],
-    "analyse": [
-      "./vendor/bin/phpstan analyse -c phpstan.neon --ansi"
     ],
     "test": [
       "./vendor/bin/pest --parallel"

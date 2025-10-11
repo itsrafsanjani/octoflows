@@ -23,8 +23,8 @@ final class PostFactory extends Factory
     public function definition(): array
     {
         return [
-            'team_id' => Team::first(),
-            'user_id' => User::first(),
+            'team_id' => Team::query()->first(),
+            'user_id' => User::query()->first(),
             'content' => fake()->realTextBetween(10, 50),
             'media' => [
                 [

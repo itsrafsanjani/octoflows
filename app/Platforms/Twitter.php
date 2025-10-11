@@ -16,17 +16,14 @@ use Abraham\TwitterOAuth\TwitterOAuthException;
 
 final class Twitter implements PlatformInterface
 {
-    public Channel $channel;
-
     public string $client_id;
 
     public string $client_secret;
 
     public TwitterOAuth $connection;
 
-    public function __construct(Channel $channel)
+    public function __construct(public Channel $channel)
     {
-        $this->channel = $channel;
         $this->client_id = config('services.twitter.client_id');
         $this->client_secret = config('services.twitter.client_secret');
 
@@ -53,7 +50,9 @@ final class Twitter implements PlatformInterface
             foreach ($post->media as $index => $media) {
                 if ($index === 4) {
                     break;
-                } // Twitter only allows 4 images per tweet
+                }
+
+                // Twitter only allows 4 images per tweet
                 $media_ids[] = $this->uploadSinglePhoto($media);
             }
         }
@@ -62,15 +61,13 @@ final class Twitter implements PlatformInterface
             'status' => $status,
         ];
 
-        if (count($media_ids) > 0) {
+        if ($media_ids !== []) {
             $tweet['media_ids'] = implode(',', $media_ids);
         }
 
         $post = $this->connection->post('statuses/update', $tweet);
 
-        if (isset($post->errors)) {
-            throw new TwitterOAuthException($post->errors[0]->message, $post->errors[0]->code);
-        }
+        throw_if(isset($post->errors), new TwitterOAuthException($post->errors[0]->message, $post->errors[0]->code));
 
         return response()->json($post);
     }
@@ -85,9 +82,7 @@ final class Twitter implements PlatformInterface
 
         ]);
 
-        if (isset($media->errors)) {
-            throw new TwitterOAuthException($media->errors[0]->message, $media->errors[0]->code);
-        }
+        throw_if(isset($media->errors), new TwitterOAuthException($media->errors[0]->message, $media->errors[0]->code));
 
         return $media->media_id_string;
     }

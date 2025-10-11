@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('channel_post', function (Blueprint $table) {
+        Schema::create('channel_post', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('channel_id')->constrained()->cascadeOnDelete();
             $table->foreignId('post_id')->constrained()->cascadeOnDelete();
