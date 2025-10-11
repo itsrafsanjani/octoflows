@@ -25,6 +25,9 @@ final class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
+        // Seed analytics data if posts and channels exist
+        $this->call(PostAnalyticsSeeder::class);
+
         // Seed trending data
         TrendingTopic::factory(20)->create();
         TrendingHashtag::factory(30)->create();
