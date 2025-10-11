@@ -50,5 +50,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
     Route::resource('/channels', ChannelController::class);
 
+    Route::get('/posts/calendar', [PostController::class, 'calendar'])->name('posts.calendar');
     Route::resource('/posts', PostController::class);
 });
