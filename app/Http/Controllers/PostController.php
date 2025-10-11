@@ -81,6 +81,7 @@ final class PostController extends Controller
             'media' => $media,
             'published_at' => $isScheduled ? $validated['published_at'] : now(),
             'is_draft' => $isDraft,
+            'review_status' => $isDraft ? 'pending' : 'pending', // All posts start as pending for review
         ]);
 
         $post->channels()->attach($channels);
