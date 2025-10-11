@@ -82,6 +82,9 @@ export default function PostsCreate() {
     const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
     const [imageResolution, setImageResolution] = useState("1200x630");
     const [channelPopoverOpen, setChannelPopoverOpen] = useState(false);
+    const [enableFirstComment, setEnableFirstComment] = useState(false);
+    const [aiPrompt, setAiPrompt] = useState("");
+    const [isGenerating, setIsGenerating] = useState(false);
 
     const { data, setData, post, processing, errors, transform } = useForm({
         post_type: "text",
@@ -93,6 +96,7 @@ export default function PostsCreate() {
         is_scheduled: false,
         published_at: "",
         is_draft: false,
+        first_comment: "",
     });
 
     useEffect(() => {
@@ -147,7 +151,7 @@ export default function PostsCreate() {
                 toast.success(
                     isDraft
                         ? "Draft saved successfully!"
-                        : "Post created successfully!",
+                        : "Post created successfully!"
                 );
             },
             onError: () => {
@@ -170,6 +174,52 @@ export default function PostsCreate() {
         setSelectedChannels((prev) => prev.filter((ch) => ch.id !== channelId));
     };
 
+    const handleGenerateContent = async () => {
+        if (!aiPrompt.trim()) {
+            toast.error("Please describe what you want to post about");
+            return;
+        }
+
+        setIsGenerating(true);
+
+        try {
+            const response = await fetch("/prism/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    model: "gpt-4",
+                    messages: [
+                        {
+                            role: "system",
+                            content: `You are a social media content creator. Generate engaging post content in a ${data.ai_tone} tone. Keep it concise and appropriate for social media platforms.`,
+                        },
+                        {
+                            role: "user",
+                            content: aiPrompt,
+                        },
+                    ],
+                }),
+            });
+
+            const result = await response.json();
+
+            if (result.choices && result.choices[0]?.message?.content) {
+                setData("content", result.choices[0].message.content);
+                toast.success("Content generated successfully!");
+                setAiPrompt("");
+            } else {
+                toast.error("Failed to generate content");
+            }
+        } catch (error) {
+            toast.error("An error occurred while generating content");
+            console.error(error);
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
     const getAllChannels = () => {
         const channels = [];
         Object.entries(groupedChannels || {}).forEach(
@@ -177,7 +227,7 @@ export default function PostsCreate() {
                 platformChannels.forEach((channel) => {
                     channels.push({ ...channel, platform });
                 });
-            },
+            }
         );
         return channels;
     };
@@ -202,7 +252,7 @@ export default function PostsCreate() {
 
     const allChannels = getAllChannels();
     const availableChannels = allChannels.filter(
-        (channel) => !selectedChannels.find((ch) => ch.id === channel.id),
+        (channel) => !selectedChannels.find((ch) => ch.id === channel.id)
     );
 
     // Group available channels by platform for organized display
@@ -214,7 +264,7 @@ export default function PostsCreate() {
             acc[channel.platform].push(channel);
             return acc;
         },
-        {},
+        {}
     );
 
     return (
@@ -268,6 +318,129 @@ export default function PostsCreate() {
                 <div className="grid gap-6 lg:grid-cols-3">
                     {/* Left Side: Main Composer (2/3 width) */}
                     <div className="space-y-6 lg:col-span-2">
+                        {/* AI Assistant */}
+                        <Card>
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Icon
+                                            icon="mdi:sparkles"
+                                            className="h-5 w-5"
+                                        />
+                                        AI Assistant
+                                    </CardTitle>
+                                    <Select
+                                        value={data.ai_tone}
+                                        onValueChange={(value) =>
+                                            setData("ai_tone", value)
+                                        }
+                                    >
+                                        <SelectTrigger className="w-[140px]">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="professional">
+                                                Professional
+                                            </SelectItem>
+                                            <SelectItem value="friendly">
+                                                Friendly
+                                            </SelectItem>
+                                            <SelectItem value="casual">
+                                                Casual
+                                            </SelectItem>
+                                            <SelectItem value="formal">
+                                                Formal
+                                            </SelectItem>
+                                            <SelectItem value="humorous">
+                                                Humorous
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <p className="text-sm text-muted-foreground">
+                                    Let AI help you create better content
+                                </p>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="aiPrompt">
+                                        Generate Content with AI
+                                    </Label>
+                                    <div className="flex gap-2">
+                                        <Input
+                                            id="aiPrompt"
+                                            placeholder="Describe what you want to post about..."
+                                            value={aiPrompt}
+                                            onChange={(e) =>
+                                                setAiPrompt(e.target.value)
+                                            }
+                                            onKeyDown={(e) => {
+                                                if (
+                                                    e.key === "Enter" &&
+                                                    !isGenerating
+                                                ) {
+                                                    handleGenerateContent();
+                                                }
+                                            }}
+                                            disabled={isGenerating}
+                                            className="flex-1"
+                                        />
+                                        <Button
+                                            onClick={handleGenerateContent}
+                                            disabled={isGenerating}
+                                        >
+                                            <Icon
+                                                icon="mdi:sparkles"
+                                                className="mr-2 h-4 w-4"
+                                            />
+                                            {isGenerating
+                                                ? "Generating..."
+                                                : "Generate"}
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap gap-2">
+                                    <Button variant="outline" size="sm">
+                                        <Icon
+                                            icon="mdi:pound"
+                                            className="mr-2 h-4 w-4"
+                                        />
+                                        Suggest Hashtags
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                        <Icon
+                                            icon="mdi:spellcheck"
+                                            className="mr-2 h-4 w-4"
+                                        />
+                                        Check Grammar
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                        <Icon
+                                            icon="mdi:tune-variant"
+                                            className="mr-2 h-4 w-4"
+                                        />
+                                        Improve Tone
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                        <Icon
+                                            icon="mdi:translate"
+                                            className="mr-2 h-4 w-4"
+                                        />
+                                        Translate
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                        <Icon
+                                            icon="mdi:content-cut"
+                                            className="mr-2 h-4 w-4"
+                                        />
+                                        Shorten
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+
                         <Card>
                             <CardHeader className="pb-3">
                                 <Tabs
@@ -356,7 +529,7 @@ export default function PostsCreate() {
                                                         Select Channels
                                                     </h4>
                                                     {Object.keys(
-                                                        groupedAvailableChannels,
+                                                        groupedAvailableChannels
                                                     ).length === 0 ? (
                                                         <p className="text-sm text-muted-foreground">
                                                             All channels have
@@ -364,7 +537,7 @@ export default function PostsCreate() {
                                                         </p>
                                                     ) : (
                                                         Object.entries(
-                                                            groupedAvailableChannels,
+                                                            groupedAvailableChannels
                                                         ).map(
                                                             ([
                                                                 platform,
@@ -392,7 +565,7 @@ export default function PostsCreate() {
                                                                     <div className="space-y-1">
                                                                         {channels.map(
                                                                             (
-                                                                                channel,
+                                                                                channel
                                                                             ) => (
                                                                                 <button
                                                                                     key={
@@ -401,7 +574,7 @@ export default function PostsCreate() {
                                                                                     type="button"
                                                                                     onClick={() => {
                                                                                         toggleChannelSelection(
-                                                                                            channel,
+                                                                                            channel
                                                                                         );
                                                                                     }}
                                                                                     className="w-full text-left px-2 py-1.5 text-sm rounded hover:bg-accent transition-colors"
@@ -417,11 +590,11 @@ export default function PostsCreate() {
                                                                                         }
                                                                                     </div>
                                                                                 </button>
-                                                                            ),
+                                                                            )
                                                                         )}
                                                                     </div>
                                                                 </div>
-                                                            ),
+                                                            )
                                                         )
                                                     )}
                                                 </div>
@@ -457,7 +630,10 @@ export default function PostsCreate() {
                                                 <div
                                                     className={`h-full transition-all ${getLimitColor()}`}
                                                     style={{
-                                                        width: `${Math.min(getCharacterPercentage(), 100)}%`,
+                                                        width: `${Math.min(
+                                                            getCharacterPercentage(),
+                                                            100
+                                                        )}%`,
                                                     }}
                                                 />
                                             </div>
@@ -498,7 +674,10 @@ export default function PostsCreate() {
                                                 {previewImages.map(
                                                     (image, index) => (
                                                         <div
-                                                            key={`preview-${image.preview.substring(0, 50)}`}
+                                                            key={`preview-${image.preview.substring(
+                                                                0,
+                                                                50
+                                                            )}`}
                                                             className="relative group"
                                                         >
                                                             <img
@@ -514,7 +693,7 @@ export default function PostsCreate() {
                                                                 variant="destructive"
                                                                 onClick={() =>
                                                                     removeImage(
-                                                                        index,
+                                                                        index
                                                                     )
                                                                 }
                                                                 className="absolute top-2 right-2"
@@ -525,7 +704,7 @@ export default function PostsCreate() {
                                                                 />
                                                             </Button>
                                                         </div>
-                                                    ),
+                                                    )
                                                 )}
                                             </div>
                                         )}
@@ -616,7 +795,7 @@ export default function PostsCreate() {
                                                         type="button"
                                                         onClick={() =>
                                                             setImageResolution(
-                                                                resolution.value,
+                                                                resolution.value
                                                             )
                                                         }
                                                         className={cn(
@@ -624,7 +803,7 @@ export default function PostsCreate() {
                                                             imageResolution ===
                                                                 resolution.value
                                                                 ? "border-primary bg-primary/5"
-                                                                : "border-border hover:border-primary/50",
+                                                                : "border-border hover:border-primary/50"
                                                         )}
                                                     >
                                                         <div className="text-xs font-medium mb-1">
@@ -649,18 +828,39 @@ export default function PostsCreate() {
                                 <CardTitle>Additional Settings</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox id="wordpress" />
-                                    <label
-                                        htmlFor="wordpress"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2"
-                                    >
-                                        <Icon
-                                            icon="mdi:wordpress"
-                                            className="h-4 w-4"
+                                <div className="space-y-2">
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id="first-comment"
+                                            checked={enableFirstComment}
+                                            onCheckedChange={(checked) =>
+                                                setEnableFirstComment(checked)
+                                            }
                                         />
-                                        Also post to WordPress Blog
-                                    </label>
+                                        <label
+                                            htmlFor="first-comment"
+                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2"
+                                        >
+                                            <Icon
+                                                icon="mdi:comment-text"
+                                                className="h-4 w-4"
+                                            />
+                                            Add First Comment
+                                        </label>
+                                    </div>
+                                    {enableFirstComment && (
+                                        <Textarea
+                                            placeholder="Write your first comment here..."
+                                            value={data.first_comment}
+                                            onChange={(e) =>
+                                                setData(
+                                                    "first_comment",
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="min-h-[80px] ml-6"
+                                        />
+                                    )}
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <Checkbox id="auto-reply" />
@@ -674,91 +874,6 @@ export default function PostsCreate() {
                                         />
                                         Enable Keyword-Based Auto Reply
                                     </label>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* AI Assistant */}
-                        <Card>
-                            <CardHeader>
-                                <div className="flex items-center justify-between">
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Icon
-                                            icon="mdi:sparkles"
-                                            className="h-5 w-5"
-                                        />
-                                        AI Assistant
-                                    </CardTitle>
-                                    <Select
-                                        value={data.ai_tone}
-                                        onValueChange={(value) =>
-                                            setData("ai_tone", value)
-                                        }
-                                    >
-                                        <SelectTrigger className="w-[140px]">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="professional">
-                                                Professional
-                                            </SelectItem>
-                                            <SelectItem value="friendly">
-                                                Friendly
-                                            </SelectItem>
-                                            <SelectItem value="casual">
-                                                Casual
-                                            </SelectItem>
-                                            <SelectItem value="formal">
-                                                Formal
-                                            </SelectItem>
-                                            <SelectItem value="humorous">
-                                                Humorous
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <p className="text-sm text-muted-foreground">
-                                    Let AI help you create better content
-                                </p>
-
-                                <div className="flex flex-wrap gap-2">
-                                    <Button variant="outline" size="sm">
-                                        <Icon
-                                            icon="mdi:pound"
-                                            className="mr-2 h-4 w-4"
-                                        />
-                                        Suggest Hashtags
-                                    </Button>
-                                    <Button variant="outline" size="sm">
-                                        <Icon
-                                            icon="mdi:spellcheck"
-                                            className="mr-2 h-4 w-4"
-                                        />
-                                        Check Grammar
-                                    </Button>
-                                    <Button variant="outline" size="sm">
-                                        <Icon
-                                            icon="mdi:tune-variant"
-                                            className="mr-2 h-4 w-4"
-                                        />
-                                        Improve Tone
-                                    </Button>
-                                    <Button variant="outline" size="sm">
-                                        <Icon
-                                            icon="mdi:translate"
-                                            className="mr-2 h-4 w-4"
-                                        />
-                                        Translate
-                                    </Button>
-                                    <Button variant="outline" size="sm">
-                                        <Icon
-                                            icon="mdi:content-cut"
-                                            className="mr-2 h-4 w-4"
-                                        />
-                                        Shorten
-                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>
@@ -913,7 +1028,7 @@ export default function PostsCreate() {
                                 onClick={() => {
                                     setScheduleModalOpen(false);
                                     toast.success(
-                                        "Post scheduled successfully!",
+                                        "Post scheduled successfully!"
                                     );
                                 }}
                             >
