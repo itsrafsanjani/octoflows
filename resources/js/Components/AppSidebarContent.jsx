@@ -19,6 +19,7 @@ const navigationConfig = [
       { name: 'Channels', icon: 'lucide:radio', route: 'channels.index' },
       { name: 'Posts', icon: 'lucide:file-text', route: 'posts.index' },
       { name: 'Trending', icon: 'lucide:trending-up', route: 'trending.index' },
+      { name: 'Review Queue', icon: 'lucide:eye', route: 'review-queue.index' },
       { name: 'Settings', icon: 'lucide:settings', route: 'profile.show' },
       { name: 'Chat', icon: 'lucide:message-circle', route: 'chat.index' },
     ],
