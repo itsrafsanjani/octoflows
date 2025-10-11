@@ -29,6 +29,16 @@ const navigationConfig = [
             },
             { name: "Posts", icon: "lucide:file-text", route: "posts.index" },
             {
+                name: "Trending",
+                icon: "lucide:trending-up",
+                route: "trending.index",
+            },
+            {
+                name: "Review Queue",
+                icon: "lucide:eye",
+                route: "review-queue.index",
+            },
+            {
                 name: "Settings",
                 icon: "lucide:settings",
                 route: "profile.show",
