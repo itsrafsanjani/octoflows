@@ -76,8 +76,8 @@ const pricingFeatures = Object.freeze([
 const faqItems = Object.freeze([
   {
     value: 'item-1',
-    title: 'Is Larasonic really free?',
-    content: 'Yes! Larasonic is completely free and open source under the MIT license. You can use it for personal or commercial projects without any restrictions. Feel free to star the repo for showing your intrest.',
+    title: 'Is OctaFlows really free?',
+    content: 'Yes! OctaFlows is completely free and open source under the MIT license. You can use it for personal or commercial projects without any restrictions. Feel free to star the repo for showing your intrest.',
   },
   {
     value: 'item-2',
@@ -91,7 +91,7 @@ const faqItems = Object.freeze([
   },
 ])
 
-const githubUrl = 'https://github.com/shipfastlabs/larasonic-react'
+const githubUrl = 'https://github.com/shipfastlabs/octaflows-react'
 
 const sponsorLinks = {
   github: 'https://github.com/sponsors/pushpak1300',
@@ -135,7 +135,7 @@ export default memo(({ canLogin, canRegister, seo = null }) => {
 
             <div className="mt-10 flex items-center justify-center gap-4 flex-row">
               <Button asChild size="lg" className="w-full sm:w-auto">
-                <a href="https://larasonic.com/dashboard" target="_blank" rel="noreferrer">
+                <a href="https://octaflows.com/dashboard" target="_blank" rel="noreferrer">
                   View Demo
                 </a>
               </Button>
@@ -193,7 +193,7 @@ export default memo(({ canLogin, canRegister, seo = null }) => {
           </div>
           <div className="mt-6 flex justify-center gap-2">
             <Button asChild>
-              <a href="https://docs.larasonic.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://docs.octaflows.com" target="_blank" rel="noopener noreferrer">
                 <Icon icon="lucide:book-open" className="size-4" aria-hidden="true" />
                 Documentation
               </a>
@@ -212,7 +212,7 @@ export default memo(({ canLogin, canRegister, seo = null }) => {
             <div className="mx-auto max-w-3xl text-center">
               <h2 className="text-center text-2xl font-bold tracking-tight sm:text-4xl">Proudly Open Source 🤑</h2>
               <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-                Larasonic is and will always be open source. No hidden fees, no premium features.
+                OctaFlows is and will always be open source. No hidden fees, no premium features.
               </p>
             </div>
 
@@ -283,7 +283,7 @@ export default memo(({ canLogin, canRegister, seo = null }) => {
                   You're already blazing fast with Laravel.
                   <br />
                   {' '}
-                  Larasonic is about to make your shipping speed
+                  OctaFlows is about to make your shipping speed
                   supersonic. 🚀
                 </p>
                 <div className="mt-8 flex justify-center gap-4">

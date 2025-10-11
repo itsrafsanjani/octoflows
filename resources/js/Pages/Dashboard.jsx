@@ -3,28 +3,28 @@ import AppLayout from '@/Layouts/AppLayout'
 
 const features = [
   {
-    title: 'Larasonic Documentation',
+    title: 'OctaFlows Documentation',
     description: 'Check out our comprehensive documentation',
     icon: 'lucide:book-open',
-    href: 'https://docs.larasonic.com',
+    href: 'https://docs.octaflows.com',
   },
   {
     title: 'Roadmap',
     description: 'See what\'s coming next',
     icon: 'lucide:map',
-    href: 'https://github.com/shipfastlabs/larasonic-react/discussions/categories/roadmap',
+    href: 'https://github.com/shipfastlabs/octaflows-react/discussions/categories/roadmap',
   },
   {
     title: 'GitHub Repository',
     description: 'Star us on GitHub',
     icon: 'lucide:github',
-    href: 'https://github.com/shipfastlabs/larasonic-react',
+    href: 'https://github.com/shipfastlabs/octaflows-react',
   },
   {
     title: 'Join Us',
     description: 'Be part of our growing community',
     icon: 'lucide:users',
-    href: 'https://github.com/shipfastlabs/larasonic-react/discussions',
+    href: 'https://github.com/shipfastlabs/octaflows-react/discussions',
   },
 ]
 

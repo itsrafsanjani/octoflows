@@ -73,13 +73,13 @@ const navigationConfig = [
             {
                 name: "Support",
                 icon: "lucide:life-buoy",
-                href: "https://github.com/shipfastlabs/larasonic-react/issues",
+                href: "https://github.com/shipfastlabs/octaflows-react/issues",
                 external: true,
             },
             {
                 name: "Documentation",
                 icon: "lucide:book-marked",
-                href: "https://docs.larasonic.com",
+                href: "https://docs.octaflows.com",
                 external: true,
             },
         ],
