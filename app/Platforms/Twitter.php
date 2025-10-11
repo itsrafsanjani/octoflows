@@ -52,7 +52,7 @@ final class Twitter implements PlatformInterface
                     break;
                 }
 
-                 // Twitter only allows 4 images per tweet
+                // Twitter only allows 4 images per tweet
                 $media_ids[] = $this->uploadSinglePhoto($media);
             }
         }

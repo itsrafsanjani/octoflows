@@ -22,6 +22,7 @@ final class PublishPostJob implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
     /**
      * Create a new job instance.
      */

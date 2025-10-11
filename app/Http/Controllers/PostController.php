@@ -30,7 +30,7 @@ final class PostController extends Controller
      */
     public function create(): Response
     {
-        $channels = auth()->user()->currentTeam->channels()->get()->map(fn($channel): array => [
+        $channels = auth()->user()->currentTeam->channels()->get()->map(fn ($channel): array => [
             'id' => $channel->id,
             'name' => $channel->name,
             'platform' => $channel->platform,

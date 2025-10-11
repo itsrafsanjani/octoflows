@@ -77,7 +77,7 @@ test('user can create post with channels', function (): void {
         'content' => 'Test post content',
     ]);
 
-    $post = \App\Models\Post::query()->where('content', 'Test post content')->first();
+    $post = Post::query()->where('content', 'Test post content')->first();
     expect($post->channels)->toHaveCount(2);
 });
 
@@ -110,7 +110,7 @@ test('user can create scheduled post', function (): void {
         'content' => 'Scheduled post content',
     ]);
 
-    $post = \App\Models\Post::query()->where('content', 'Scheduled post content')->first();
+    $post = Post::query()->where('content', 'Scheduled post content')->first();
     expect($post->published_at->toDateTimeString())
         ->toBe($futureDate->toDateTimeString());
 });
@@ -139,7 +139,7 @@ test('user can create post with media', function (): void {
         ->post(route('posts.store'), $postData)
         ->assertRedirect(route('posts.index'));
 
-    $post = \App\Models\Post::query()->where('content', 'Post with media')->first();
+    $post = Post::query()->where('content', 'Post with media')->first();
     expect($post->media)->toBeArray();
     expect($post->media)->toHaveCount(1);
     expect($post->media[0])->toHaveKeys(['id', 'name', 'filetype', 'size', 'path']);
@@ -236,7 +236,7 @@ test('is_scheduled field is not inserted into database', function (): void {
         ->post(route('posts.store'), $postData)
         ->assertRedirect(route('posts.index'));
 
-    $post = \App\Models\Post::query()->where('content', 'Test for is_scheduled field')->first();
+    $post = Post::query()->where('content', 'Test for is_scheduled field')->first();
 
     // Verify the post was created successfully
     expect($post)->not->toBeNull();
@@ -266,7 +266,7 @@ test('channels are properly attached when creating post', function (): void {
         ->post(route('posts.store'), $postData)
         ->assertRedirect(route('posts.index'));
 
-    $post = \App\Models\Post::query()->where('content', 'Test for channel attachment')->first();
+    $post = Post::query()->where('content', 'Test for channel attachment')->first();
 
     expect($post->channels)->toHaveCount(3);
     expect($post->channels->pluck('id')->toArray())->toEqual($channels->pluck('id')->toArray());
