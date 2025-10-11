@@ -9,8 +9,10 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\User\OauthController;
+use App\Http\Controllers\TrendingController;
 use App\Http\Controllers\PostArchiveController;
+use App\Http\Controllers\ReviewQueueController;
+use App\Http\Controllers\User\OauthController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\User\LoginLinkController;
 
@@ -38,6 +40,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
 
+    Route::get('/trending', [TrendingController::class, 'index'])->name('trending.index');
+    Route::get('/api/trending/topics', [TrendingController::class, 'topics'])->name('trending.topics');
+    Route::get('/api/trending/hashtags', [TrendingController::class, 'hashtags'])->name('trending.hashtags');
+    Route::get('/api/trending/viral-posts', [TrendingController::class, 'viralPosts'])->name('trending.viral-posts');
+
     Route::resource('/subscriptions', SubscriptionController::class)
         ->names('subscriptions')
         ->only(['index', 'create', 'store', 'show']);
@@ -51,6 +58,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
     Route::resource('/channels', ChannelController::class);
 
+    Route::get('/posts/calendar', [PostController::class, 'calendar'])->name('posts.calendar');
     Route::resource('/posts', PostController::class);
 
     // Post Archive Routes
@@ -61,4 +69,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::delete('/posts/{id}/archive', [PostArchiveController::class, 'destroy'])->name('posts.archive.destroy');
     Route::delete('/posts/archive/clear', [PostArchiveController::class, 'clearArchive'])->name('posts.archive.clear');
     Route::get('/posts/archive/export', [PostArchiveController::class, 'export'])->name('posts.archive.export');
+
+    // Review Queue Routes
+    Route::get('/review-queue', [ReviewQueueController::class, 'index'])->name('review-queue.index');
+    Route::post('/posts/{post}/approve', [ReviewQueueController::class, 'approve'])->name('posts.approve');
+    Route::post('/posts/{post}/reject', [ReviewQueueController::class, 'reject'])->name('posts.reject');
+    Route::patch('/posts/{post}/flags', [ReviewQueueController::class, 'updateFlags'])->name('posts.update-flags');
 });
