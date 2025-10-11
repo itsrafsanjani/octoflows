@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, router, usePage } from '@inertiajs/react'
+import { Link, router, usePage, useForm } from '@inertiajs/react'
 import { format } from 'date-fns'
 import { Icon } from '@iconify/react'
 import { Button } from '@/Components/shadcn/ui/button'
@@ -13,6 +13,14 @@ import {
 } from '@/Components/shadcn/ui/select'
 import { Input } from '@/Components/shadcn/ui/input'
 import { Badge } from '@/Components/shadcn/ui/badge'
+import { Label } from '@/Components/shadcn/ui/label'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/Components/shadcn/ui/dialog'
 import {
   Pagination,
   PaginationContent,
@@ -32,6 +40,12 @@ import AppLayout from '@/Layouts/AppLayout'
 export default function PostArchive() {
   const { posts, filters, statistics } = usePage().props
   const [localFilters, setLocalFilters] = useState(filters)
+  const [requeueModalOpen, setRequeueModalOpen] = useState(false)
+  const [selectedPost, setSelectedPost] = useState(null)
+  
+  const { data, setData, post: submitForm, processing, errors, reset } = useForm({
+    published_at: '',
+  })
 
   const handleFilterChange = (key, value) => {
     const newFilters = { ...localFilters, [key]: value }
@@ -79,9 +93,15 @@ export default function PostArchive() {
     )
   }
 
-  const handleAction = (action, postId) => {
+  const handleAction = (action, postId, post) => {
     if (action === 'requeue') {
-      router.post(route('posts.requeue', postId))
+      setSelectedPost(post)
+      // Set default datetime to tomorrow at current time
+      const tomorrow = new Date()
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      const defaultDateTime = tomorrow.toISOString().slice(0, 16)
+      setData('published_at', defaultDateTime)
+      setRequeueModalOpen(true)
     } else if (action === 'repost') {
       router.post(route('posts.repost', postId))
     } else if (action === 'view') {
@@ -91,6 +111,18 @@ export default function PostArchive() {
         router.delete(route('posts.archive.destroy', postId))
       }
     }
+  }
+
+  const handleRequeue = () => {
+    if (!selectedPost) return
+    
+    submitForm(route('posts.requeue', selectedPost.id), {
+      onSuccess: () => {
+        setRequeueModalOpen(false)
+        reset()
+        setSelectedPost(null)
+      },
+    })
   }
 
   const handleClearArchive = () => {
@@ -287,28 +319,32 @@ export default function PostArchive() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleAction('requeue', post.id)}
+                          onClick={() => handleAction('requeue', post.id, post)}
                         >
+                          <Icon icon="lucide:clock" className="h-4 w-4 mr-1" />
                           Requeue
                         </Button>
                         <Button
                           size="sm"
-                          onClick={() => handleAction('repost', post.id)}
+                          onClick={() => handleAction('repost', post.id, post)}
                         >
+                          <Icon icon="lucide:copy" className="h-4 w-4 mr-1" />
                           Repost
                         </Button>
                         <Button
                           size="sm"
                           variant="secondary"
-                          onClick={() => handleAction('view', post.id)}
+                          onClick={() => handleAction('view', post.id, post)}
                         >
+                          <Icon icon="lucide:eye" className="h-4 w-4 mr-1" />
                           View
                         </Button>
                         <Button
                           size="sm"
                           variant="destructive"
-                          onClick={() => handleAction('delete', post.id)}
+                          onClick={() => handleAction('delete', post.id, post)}
                         >
+                          <Icon icon="lucide:trash-2" className="h-4 w-4 mr-1" />
                           Delete
                         </Button>
                       </div>
@@ -343,6 +379,83 @@ export default function PostArchive() {
           </Pagination>
         )}
       </div>
+
+      {/* Requeue Modal */}
+      <Dialog open={requeueModalOpen} onOpenChange={setRequeueModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Icon icon="lucide:clock" className="h-5 w-5" />
+              Requeue Post
+            </DialogTitle>
+            <DialogDescription>
+              Schedule this post to be published at a specific date and time
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {selectedPost && (
+              <div className="rounded-lg border bg-muted/50 p-4">
+                <p className="text-sm font-medium mb-2">Post Content:</p>
+                <p className="text-sm text-muted-foreground line-clamp-3">
+                  {selectedPost.content}
+                </p>
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <Label htmlFor="published_at">
+                Publish Date & Time
+              </Label>
+              <Input
+                id="published_at"
+                type="datetime-local"
+                value={data.published_at}
+                onChange={(e) => setData('published_at', e.target.value)}
+                min={new Date().toISOString().slice(0, 16)}
+              />
+              {errors.published_at && (
+                <p className="text-sm text-destructive">
+                  {errors.published_at}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Select when you want this post to be published
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setRequeueModalOpen(false)
+                  reset()
+                  setSelectedPost(null)
+                }}
+                disabled={processing}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleRequeue}
+                disabled={processing || !data.published_at}
+              >
+                {processing ? (
+                  <>
+                    <Icon icon="lucide:loader-2" className="h-4 w-4 mr-2 animate-spin" />
+                    Scheduling...
+                  </>
+                ) : (
+                  <>
+                    <Icon icon="lucide:calendar-check" className="h-4 w-4 mr-2" />
+                    Schedule Post
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   )
 }

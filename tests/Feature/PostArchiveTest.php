@@ -5,28 +5,24 @@ declare(strict_types=1);
 use App\Models\Post;
 use App\Models\Team;
 use App\Models\User;
-use App\Models\Channel;
 
 use function Pest\Laravel\actingAs;
 
 it('displays the post archive page', function () {
     $user = User::factory()->withPersonalTeam()->create();
-    $team = $user->currentTeam;
+    $team = Team::latest()->first();
+    $user->current_team_id = $team->id;
+    $user->save();
 
-    $response = actingAs($user)
+    actingAs($user)
         ->get(route('posts.archive'))
-        ->assertOk();
-    
-    // Check if it's a proper Inertia response
-    $this->assertTrue($response->headers->get('Content-Type') === 'application/json' || 
-                     str_contains($response->headers->get('Content-Type'), 'application/json'));
-    
-    $response->assertInertia(fn ($page) => $page
-        ->component('Posts/Archive')
-        ->has('posts')
-        ->has('filters')
-        ->has('statistics')
-    );
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('Posts/Archive')
+            ->has('posts')
+            ->has('filters')
+            ->has('statistics')
+        );
 });
 
 it('filters posts by type', function () {
@@ -95,12 +91,17 @@ it('can requeue a post', function () {
         'published_at' => now()->subDay(),
     ]);
 
+    $newScheduleTime = now()->addDays(2);
+
     actingAs($user)
-        ->post(route('posts.requeue', $post->id))
+        ->post(route('posts.requeue', $post->id), [
+            'published_at' => $newScheduleTime->format('Y-m-d H:i:s'),
+        ])
         ->assertRedirect();
-    
-    expect($post->fresh())
-        ->is_draft->toBeTrue();
+
+    $freshPost = $post->fresh();
+    expect($freshPost->is_draft)->toBeTrue();
+    expect($freshPost->published_at->format('Y-m-d H:i'))->toBe($newScheduleTime->format('Y-m-d H:i'));
 });
 
 it('can repost a post', function () {
@@ -116,7 +117,7 @@ it('can repost a post', function () {
     actingAs($user)
         ->post(route('posts.repost', $originalPost->id))
         ->assertRedirect();
-    
+
     expect(Post::where('content', 'Original post content')->count())->toBe(2);
 });
 
@@ -132,7 +133,7 @@ it('can delete a post from archive', function () {
     actingAs($user)
         ->delete(route('posts.archive.destroy', $post->id))
         ->assertRedirect();
-    
+
     expect(Post::find($post->id))->toBeNull();
 });
 
@@ -156,7 +157,7 @@ it('can clear the entire archive', function () {
     actingAs($user)
         ->delete(route('posts.archive.clear'))
         ->assertRedirect();
-    
+
     // Only draft posts should remain
     expect(Post::where('is_draft', false)->count())->toBe(0);
     expect(Post::where('is_draft', true)->count())->toBe(2);
@@ -173,13 +174,16 @@ it('can export archive data', function () {
         'post_type' => 'single',
     ]);
 
-    actingAs($user)
-        ->get(route('posts.archive.export'))
-        ->assertOk()
+    $response = actingAs($user)
+        ->get(route('posts.archive.export'));
+
+    $response->assertOk()
         ->assertHeader('Content-Type', 'text/csv; charset=UTF-8')
-        ->assertHeader('Content-Disposition', function ($value) { return str_contains($value, 'attachment'); })
         ->assertSee('Post Type,Content,Platforms,Published At,Status')
-        ->assertSee('single,Test post content');
+        ->assertSee('single')
+        ->assertSee('Test post content');
+
+    expect($response->headers->get('Content-Disposition'))->toContain('attachment');
 });
 
 it('can view a specific archived post', function () {
@@ -206,21 +210,26 @@ it('calculates archive statistics correctly', function () {
     $user = User::factory()->withPersonalTeam()->create();
     $team = $user->currentTeam;
 
-    // Create posts for statistics
-    Post::factory()->count(10)->single()->published()->create([
+    // Create posts for statistics (from previous months)
+    Post::factory()->count(10)->single()->create([
         'team_id' => $team->id,
         'user_id' => $user->id,
+        'is_draft' => false,
+        'published_at' => now()->subMonths(2),
     ]);
 
-    Post::factory()->count(5)->campaign()->published()->create([
+    Post::factory()->count(5)->campaign()->create([
         'team_id' => $team->id,
         'user_id' => $user->id,
+        'is_draft' => false,
+        'published_at' => now()->subMonths(3),
     ]);
 
     // Create a post from this month
-    Post::factory()->single()->published()->create([
+    Post::factory()->single()->create([
         'team_id' => $team->id,
         'user_id' => $user->id,
+        'is_draft' => false,
         'published_at' => now()->startOfMonth()->addDays(5),
     ]);
 

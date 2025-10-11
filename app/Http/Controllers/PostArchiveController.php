@@ -21,6 +21,10 @@ final class PostArchiveController extends Controller
         $user = Auth::user();
         $team = $user->currentTeam;
 
+        if (! $team) {
+            abort(403, 'No team found for user');
+        }
+
         $query = $team->posts()
             ->with(['channels', 'user'])
             ->where('is_draft', false)
@@ -84,17 +88,25 @@ final class PostArchiveController extends Controller
     }
 
     /**
-     * Requeue a post (move it back to draft status).
+     * Requeue a post (move it back to draft status with optional new schedule).
      */
-    public function requeue(string $id): RedirectResponse
+    public function requeue(Request $request, string $id): RedirectResponse
     {
         $post = Auth::user()->currentTeam->posts()->findOrFail($id);
 
-        $post->update([
-            'is_draft' => true,
+        $validated = $request->validate([
+            'published_at' => ['nullable', 'date', 'after:now'],
         ]);
 
-        return redirect()->back()->banner('Post requeued successfully.');
+        $updateData = ['is_draft' => true];
+
+        if (isset($validated['published_at'])) {
+            $updateData['published_at'] = $validated['published_at'];
+        }
+
+        $post->update($updateData);
+
+        return redirect()->back()->banner('Post requeued and scheduled successfully.');
     }
 
     /**
