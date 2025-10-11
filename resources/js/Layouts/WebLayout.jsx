@@ -6,11 +6,11 @@ import { useEffect, useState } from 'react'
 const navLinks = [
   { label: 'Features', href: '/#features', external: false },
   { label: 'Pricing', href: '/#pricing', external: false },
-  { label: 'Docs', href: 'https://docs.larasonic.com/introduction', external: true },
+  { label: 'Docs', href: 'https://docs.octaflows.com/introduction', external: true },
 ]
 
-const githubUrl = 'https://github.com/shipfastlabs/larasonic-react'
-const twitterUrl = 'https://x.com/pushpak1300?ref=larasonic'
+const githubUrl = 'https://github.com/shipfastlabs/octaflows-react'
+const twitterUrl = 'https://x.com/pushpak1300?ref=octaflows'
 
 export default function WebLayout({ children }) {
   const { props } = usePage()
@@ -168,7 +168,7 @@ export default function WebLayout({ children }) {
                 {' '}
                 <a
                   className="underline"
-                  href="https://sevalla.com/?ref=larasonic"
+                  href="https://sevalla.com/?ref=octaflows"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Larasonic Documentation</title>
+    <title>OctaFlows Documentation</title>
     <meta charset="utf-8"/>
     <meta
         name="viewport"

@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'subscriptions' => [
         [
-            'plan' => 'Larasonic Basic 🚀',
+            'plan' => 'OctaFlows Basic 🚀',
             'description' => 'The best plan for individuals who wants to explore demo subscription.',
             'price_id' => 'price_1QTQldHNOPjoTPj1vVHORPs9',
             'price' => 5,
@@ -19,7 +19,7 @@ return [
             ],
         ],
         [
-            'plan' => 'Larasonic Pro ✨',
+            'plan' => 'OctaFlows Pro ✨',
             'description' => 'The best plan for individuals who wants to use AI features.',
             'price_id' => 'price_1QSEgRHNOPjoTPj15AjCR23u',
             'price' => 15,

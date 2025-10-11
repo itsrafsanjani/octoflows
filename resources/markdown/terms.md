@@ -1,10 +1,10 @@
 ## Terms of Service
 
-Welcome to LaraSonic! By using our services, you agree to the following terms and conditions.
+Welcome to OctaFlows! By using our services, you agree to the following terms and conditions.
 
 ### 1. Acceptance of Terms
 
-By accessing or using LaraSonic, you agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree, please do not use our services.
+By accessing or using OctaFlows, you agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree, please do not use our services.
 
 ### 2. Changes to Terms
 
@@ -24,12 +24,12 @@ You agree not to engage in any of the following prohibited activities:
 
 ### 5. Limitation of Liability
 
-LaraSonic is not liable for any indirect, incidental, or consequential damages arising from your use of the service.
+OctaFlows is not liable for any indirect, incidental, or consequential damages arising from your use of the service.
 
 ### 6. Governing Law
 
-These terms are governed by the laws of the jurisdiction in which LaraSonic operates.
+These terms are governed by the laws of the jurisdiction in which OctaFlows operates.
 
 ### 7. Contact Information
 
-For any questions about these Terms of Service, please contact us at support@larasonic.com.
+For any questions about these Terms of Service, please contact us at support@octaflows.com.
