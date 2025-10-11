@@ -30,15 +30,13 @@ final class PostController extends Controller
      */
     public function create(): Response
     {
-        $channels = auth()->user()->currentTeam->channels()->get()->map(function ($channel) {
-            return [
-                'id' => $channel->id,
-                'name' => $channel->name,
-                'platform' => $channel->platform,
-                'type' => $channel->type,
-                'label' => $channel->title,
-            ];
-        });
+        $channels = auth()->user()->currentTeam->channels()->get()->map(fn ($channel): array => [
+            'id' => $channel->id,
+            'name' => $channel->name,
+            'platform' => $channel->platform,
+            'type' => $channel->type,
+            'label' => $channel->title,
+        ]);
 
         // Group channels by platform
         $groupedChannels = $channels->groupBy('platform');
@@ -97,7 +95,7 @@ final class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): void
     {
         //
     }
@@ -105,7 +103,7 @@ final class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id): void
     {
         //
     }
@@ -113,7 +111,7 @@ final class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StorePostRequest $request, string $id)
+    public function update(StorePostRequest $request, string $id): void
     {
         //
     }
@@ -121,7 +119,7 @@ final class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): void
     {
         //
     }

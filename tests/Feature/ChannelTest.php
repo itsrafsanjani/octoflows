@@ -8,7 +8,7 @@ use App\Models\Channel;
 
 use function Pest\Laravel\actingAs;
 
-test('channels index page displays channels for current team', function () {
+test('channels index page displays channels for current team', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $team = $user->currentTeam;
 
@@ -25,7 +25,7 @@ test('channels index page displays channels for current team', function () {
             ->has('channels.data', 3));
 });
 
-test('users can only see channels from their current team', function () {
+test('users can only see channels from their current team', function (): void {
     $user1 = User::factory()->withPersonalTeam()->create();
     $user2 = User::factory()->withPersonalTeam()->create();
 
@@ -48,7 +48,7 @@ test('users can only see channels from their current team', function () {
             ->where('channels.data.0.id', $channel1->id));
 });
 
-test('channel belongs to team', function () {
+test('channel belongs to team', function (): void {
     $team = Team::factory()->create();
     $channel = Channel::factory()->create(['team_id' => $team->id]);
 
@@ -56,7 +56,7 @@ test('channel belongs to team', function () {
     expect($channel->team->id)->toBe($team->id);
 });
 
-test('channel belongs to user', function () {
+test('channel belongs to user', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $channel = Channel::factory()->create([
         'team_id' => $user->currentTeam->id,
@@ -67,7 +67,7 @@ test('channel belongs to user', function () {
     expect($channel->user->id)->toBe($user->id);
 });
 
-test('channel has title attribute', function () {
+test('channel has title attribute', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $channel = Channel::factory()->create([
         'team_id' => $user->currentTeam->id,

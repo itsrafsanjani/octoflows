@@ -12,11 +12,11 @@ use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Storage::fake('local');
 });
 
-test('posts index page displays posts for current team', function () {
+test('posts index page displays posts for current team', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $team = $user->currentTeam;
 
@@ -33,7 +33,7 @@ test('posts index page displays posts for current team', function () {
             ->has('posts.data', 3));
 });
 
-test('posts create page displays available channels', function () {
+test('posts create page displays available channels', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $team = $user->currentTeam;
 
@@ -50,7 +50,7 @@ test('posts create page displays available channels', function () {
             ->has('channels', 2));
 });
 
-test('user can create post with channels', function () {
+test('user can create post with channels', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $team = $user->currentTeam;
 
@@ -77,11 +77,11 @@ test('user can create post with channels', function () {
         'content' => 'Test post content',
     ]);
 
-    $post = Post::where('content', 'Test post content')->first();
+    $post = Post::query()->where('content', 'Test post content')->first();
     expect($post->channels)->toHaveCount(2);
 });
 
-test('user can create scheduled post', function () {
+test('user can create scheduled post', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $team = $user->currentTeam;
 
@@ -110,12 +110,12 @@ test('user can create scheduled post', function () {
         'content' => 'Scheduled post content',
     ]);
 
-    $post = Post::where('content', 'Scheduled post content')->first();
+    $post = Post::query()->where('content', 'Scheduled post content')->first();
     expect($post->published_at->toDateTimeString())
         ->toBe($futureDate->toDateTimeString());
 });
 
-test('user can create post with media', function () {
+test('user can create post with media', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $team = $user->currentTeam;
 
@@ -139,13 +139,13 @@ test('user can create post with media', function () {
         ->post(route('posts.store'), $postData)
         ->assertRedirect(route('posts.index'));
 
-    $post = Post::where('content', 'Post with media')->first();
+    $post = Post::query()->where('content', 'Post with media')->first();
     expect($post->media)->toBeArray();
     expect($post->media)->toHaveCount(1);
     expect($post->media[0])->toHaveKeys(['id', 'name', 'filetype', 'size', 'path']);
 });
 
-test('post requires content', function () {
+test('post requires content', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $channel = Channel::factory()->create([
         'team_id' => $user->currentTeam->id,
@@ -163,7 +163,7 @@ test('post requires content', function () {
         ->assertSessionHasErrors('content');
 });
 
-test('post requires at least one channel', function () {
+test('post requires at least one channel', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
 
     actingAs($user)
@@ -177,7 +177,7 @@ test('post requires at least one channel', function () {
         ->assertSessionHasErrors('channels');
 });
 
-test('post belongs to team', function () {
+test('post belongs to team', function (): void {
     $team = Team::factory()->create();
     $post = Post::factory()->create(['team_id' => $team->id]);
 
@@ -185,7 +185,7 @@ test('post belongs to team', function () {
     expect($post->team->id)->toBe($team->id);
 });
 
-test('post belongs to user', function () {
+test('post belongs to user', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $post = Post::factory()->create([
         'team_id' => $user->currentTeam->id,
@@ -196,7 +196,7 @@ test('post belongs to user', function () {
     expect($post->user->id)->toBe($user->id);
 });
 
-test('post has many channels', function () {
+test('post has many channels', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $team = $user->currentTeam;
 
@@ -215,7 +215,7 @@ test('post has many channels', function () {
     expect($post->channels)->toHaveCount(3);
 });
 
-test('is_scheduled field is not inserted into database', function () {
+test('is_scheduled field is not inserted into database', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $team = $user->currentTeam;
 
@@ -236,7 +236,7 @@ test('is_scheduled field is not inserted into database', function () {
         ->post(route('posts.store'), $postData)
         ->assertRedirect(route('posts.index'));
 
-    $post = Post::where('content', 'Test for is_scheduled field')->first();
+    $post = Post::query()->where('content', 'Test for is_scheduled field')->first();
 
     // Verify the post was created successfully
     expect($post)->not->toBeNull();
@@ -245,7 +245,7 @@ test('is_scheduled field is not inserted into database', function () {
     expect($post->getAttributes())->not->toHaveKey('is_scheduled');
 });
 
-test('channels are properly attached when creating post', function () {
+test('channels are properly attached when creating post', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
     $team = $user->currentTeam;
 
@@ -266,7 +266,7 @@ test('channels are properly attached when creating post', function () {
         ->post(route('posts.store'), $postData)
         ->assertRedirect(route('posts.index'));
 
-    $post = Post::where('content', 'Test for channel attachment')->first();
+    $post = Post::query()->where('content', 'Test for channel attachment')->first();
 
     expect($post->channels)->toHaveCount(3);
     expect($post->channels->pluck('id')->toArray())->toEqual($channels->pluck('id')->toArray());
