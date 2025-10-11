@@ -8,9 +8,10 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\WelcomeController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TrendingController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\User\OauthController;
+use App\Http\Controllers\PostArchiveController;
 use App\Http\Controllers\ReviewQueueController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\User\LoginLinkController;
@@ -59,6 +60,15 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
     Route::get('/posts/calendar', [PostController::class, 'calendar'])->name('posts.calendar');
     Route::resource('/posts', PostController::class);
+
+    // Post Archive Routes
+    Route::get('/archive', [PostArchiveController::class, 'index'])->name('posts.archive');
+    Route::post('/posts/{id}/requeue', [PostArchiveController::class, 'requeue'])->name('posts.requeue');
+    Route::post('/posts/{id}/repost', [PostArchiveController::class, 'repost'])->name('posts.repost');
+    Route::get('/posts/{id}/view', [PostArchiveController::class, 'view'])->name('posts.view');
+    Route::delete('/posts/{id}/archive', [PostArchiveController::class, 'destroy'])->name('posts.archive.destroy');
+    Route::delete('/archive/clear', [PostArchiveController::class, 'clearArchive'])->name('posts.archive.clear');
+    Route::get('/archive/export', [PostArchiveController::class, 'export'])->name('posts.archive.export');
 
     // Review Queue Routes
     Route::get('/review-queue', [ReviewQueueController::class, 'index'])->name('review-queue.index');

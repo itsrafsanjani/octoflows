@@ -29,6 +29,11 @@ const navigationConfig = [
             },
             { name: "Posts", icon: "lucide:file-text", route: "posts.index" },
             {
+                name: "Post Archive",
+                icon: "lucide:archive",
+                route: "posts.archive",
+            },
+            {
                 name: "Trending",
                 icon: "lucide:trending-up",
                 route: "trending.index",
