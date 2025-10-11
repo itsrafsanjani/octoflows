@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
-import { Head } from '@inertiajs/react'
+import { useState, useEffect, useCallback } from 'react'
+import { Head, router } from '@inertiajs/react'
+import { debounce } from 'lodash'
 import AppLayout from '@/Layouts/AppLayout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/shadcn/ui/card'
 import { Badge } from '@/Components/shadcn/ui/badge'
@@ -13,6 +14,7 @@ export default function TrendingIndex({ trendingTopics, trendingHashtags, viralP
   const [selectedPlatform, setSelectedPlatform] = useState(filters.platform || 'all')
   const [selectedCategory, setSelectedCategory] = useState(filters.category || 'all')
   const [activeTab, setActiveTab] = useState('trending')
+  const [isLoading, setIsLoading] = useState(false)
 
   const platforms = [
     { value: 'all', label: 'All Platforms' },
@@ -28,14 +30,47 @@ export default function TrendingIndex({ trendingTopics, trendingHashtags, viralP
     ...categoryStats.map(stat => ({ value: stat.category, label: stat.category })),
   ]
 
+  // Debounced filter function to prevent excessive API calls
+  const debouncedFilter = useCallback(
+    debounce((platform, category) => {
+      router.get('/trending', {
+        platform: platform === 'all' ? undefined : platform,
+        category: category === 'all' ? undefined : category,
+      }, {
+        preserveState: true,
+        preserveScroll: true,
+        onStart: () => setIsLoading(true),
+        onFinish: () => setIsLoading(false),
+      })
+    }, 300),
+    []
+  )
+
   const handlePlatformChange = (platform) => {
     setSelectedPlatform(platform)
-    // In a real app, you would make an API call here to filter data
+    debouncedFilter(platform, selectedCategory)
   }
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category)
-    // In a real app, you would make an API call here to filter data
+    debouncedFilter(selectedPlatform, category)
+  }
+
+  // Handle save functionality
+  const handleSave = (item) => {
+    // TODO: Implement save functionality
+    console.log('Saving item:', item)
+  }
+
+  // Handle use in post functionality
+  const handleUseInPost = (item) => {
+    // TODO: Implement use in post functionality
+    console.log('Using in post:', item)
+    // This could redirect to the post creation page with pre-filled data
+    router.get('/posts/create', {
+      trending_data: item,
+      type: activeTab
+    })
   }
 
   const getTrendScoreColor = (score) => {
@@ -71,8 +106,8 @@ export default function TrendingIndex({ trendingTopics, trendingHashtags, viralP
         </div>
 
         {/* Filters */}
-        <div className="flex gap-4">
-          <Select value={selectedPlatform} onValueChange={handlePlatformChange}>
+        <div className="flex gap-4 items-center">
+          <Select value={selectedPlatform} onValueChange={handlePlatformChange} disabled={isLoading}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Select platform" />
             </SelectTrigger>
@@ -85,7 +120,7 @@ export default function TrendingIndex({ trendingTopics, trendingHashtags, viralP
             </SelectContent>
           </Select>
 
-          <Select value={selectedCategory} onValueChange={handleCategoryChange}>
+          <Select value={selectedCategory} onValueChange={handleCategoryChange} disabled={isLoading}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
@@ -97,6 +132,13 @@ export default function TrendingIndex({ trendingTopics, trendingHashtags, viralP
               ))}
             </SelectContent>
           </Select>
+
+          {isLoading && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Icon icon="lucide:loader-2" className="h-4 w-4 animate-spin" />
+              <span>Updating...</span>
+            </div>
+          )}
         </div>
 
         {/* Tabs */}
@@ -160,11 +202,20 @@ export default function TrendingIndex({ trendingTopics, trendingHashtags, viralP
                     </div>
 
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="flex-1">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => handleSave(topic)}
+                      >
                         <Icon icon="lucide:bookmark" className="h-4 w-4 mr-1" />
                         Save
                       </Button>
-                      <Button size="sm" className="flex-1">
+                      <Button 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => handleUseInPost(topic)}
+                      >
                         <Icon icon="lucide:pencil" className="h-4 w-4 mr-1" />
                         Use in Post
                       </Button>
@@ -220,23 +271,32 @@ export default function TrendingIndex({ trendingTopics, trendingHashtags, viralP
                       </div>
                     )}
                     
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{hashtag.platform}</span>
-                      <span>
-                        {hashtag.trending_since ? formatDistanceToNow(new Date(hashtag.trending_since), { addSuffix: true }) : 'Just now'}
-                      </span>
-                    </div>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>{hashtag.platform}</span>
+          <span>
+            {hashtag.trending_since ? formatDistanceToNow(new Date(hashtag.trending_since), { addSuffix: true }) : 'Just now'}
+          </span>
+        </div>
 
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="flex-1">
-                        <Icon icon="lucide:bookmark" className="h-4 w-4 mr-1" />
-                        Save
-                      </Button>
-                      <Button size="sm" className="flex-1">
-                        <Icon icon="lucide:pencil" className="h-4 w-4 mr-1" />
-                        Use in Post
-                      </Button>
-                    </div>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex-1"
+            onClick={() => handleSave(hashtag)}
+          >
+            <Icon icon="lucide:bookmark" className="h-4 w-4 mr-1" />
+            Save
+          </Button>
+          <Button 
+            size="sm" 
+            className="flex-1"
+            onClick={() => handleUseInPost(hashtag)}
+          >
+            <Icon icon="lucide:pencil" className="h-4 w-4 mr-1" />
+            Use in Post
+          </Button>
+        </div>
                   </CardContent>
                 </Card>
               ))}
@@ -296,23 +356,32 @@ export default function TrendingIndex({ trendingTopics, trendingHashtags, viralP
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{post.platform}</span>
-                      <span>
-                        {formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}
-                      </span>
-                    </div>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>{post.platform}</span>
+          <span>
+            {formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}
+          </span>
+        </div>
 
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="flex-1">
-                        <Icon icon="lucide:bookmark" className="h-4 w-4 mr-1" />
-                        Save
-                      </Button>
-                      <Button size="sm" className="flex-1">
-                        <Icon icon="lucide:pencil" className="h-4 w-4 mr-1" />
-                        Use in Post
-                      </Button>
-                    </div>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex-1"
+            onClick={() => handleSave(post)}
+          >
+            <Icon icon="lucide:bookmark" className="h-4 w-4 mr-1" />
+            Save
+          </Button>
+          <Button 
+            size="sm" 
+            className="flex-1"
+            onClick={() => handleUseInPost(post)}
+          >
+            <Icon icon="lucide:pencil" className="h-4 w-4 mr-1" />
+            Use in Post
+          </Button>
+        </div>
                   </CardContent>
                 </Card>
               ))}
