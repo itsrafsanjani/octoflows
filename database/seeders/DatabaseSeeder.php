@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\TrendingTopic;
+use App\Models\TrendingHashtag;
+use App\Models\ViralPost;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -21,5 +24,10 @@ final class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
             'password' => Hash::make('password'),
         ]);
+
+        // Seed trending data
+        TrendingTopic::factory(20)->create();
+        TrendingHashtag::factory(30)->create();
+        ViralPost::factory(25)->create();
     }
 }
