@@ -9,6 +9,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TrendingController;
 use App\Http\Controllers\User\OauthController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\User\LoginLinkController;
@@ -36,6 +37,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::delete('/auth/destroy/{provider}', [OauthController::class, 'destroy'])->name('oauth.destroy');
 
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+
+    Route::get('/trending', [TrendingController::class, 'index'])->name('trending.index');
+    Route::get('/api/trending/topics', [TrendingController::class, 'topics'])->name('trending.topics');
+    Route::get('/api/trending/hashtags', [TrendingController::class, 'hashtags'])->name('trending.hashtags');
+    Route::get('/api/trending/viral-posts', [TrendingController::class, 'viralPosts'])->name('trending.viral-posts');
 
     Route::resource('/subscriptions', SubscriptionController::class)
         ->names('subscriptions')
