@@ -22,12 +22,17 @@ const navigationConfig = [
                 isActive: true,
             },
             { name: "Channels", icon: "lucide:radio", route: "channels.index" },
+            { name: "Posts", icon: "lucide:file-text", route: "posts.index" },
             {
                 name: "Content Calendar",
                 icon: "lucide:calendar-range",
                 route: "posts.calendar",
             },
-            { name: "Posts", icon: "lucide:file-text", route: "posts.index" },
+            {
+                name: "Review Queue",
+                icon: "lucide:eye",
+                route: "review-queue.index",
+            },
             {
                 name: "Post Archive",
                 icon: "lucide:archive",
@@ -44,19 +49,9 @@ const navigationConfig = [
                 route: "trending.index",
             },
             {
-                name: "Review Queue",
-                icon: "lucide:eye",
-                route: "review-queue.index",
-            },
-            {
                 name: "Settings",
                 icon: "lucide:settings",
                 route: "profile.show",
-            },
-            {
-                name: "Chat",
-                icon: "lucide:message-circle",
-                route: "chat.index",
             },
         ],
     },

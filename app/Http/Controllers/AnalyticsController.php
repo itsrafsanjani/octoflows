@@ -50,7 +50,9 @@ final class AnalyticsController extends Controller
         $posts = $team->posts()
             ->whereBetween('published_at', [$startDate, $endDate])
             ->where('is_draft', false)
-            ->with(['analytics'])
+            ->with(['analytics' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('analytics_date', [$startDate, $endDate]);
+            }])
             ->get();
 
         $totalImpressions = $posts->sum(function ($post) {
@@ -78,7 +80,9 @@ final class AnalyticsController extends Controller
         $previousPosts = $team->posts()
             ->whereBetween('published_at', [$previousStartDate, $previousEndDate])
             ->where('is_draft', false)
-            ->with(['analytics'])
+            ->with(['analytics' => function ($query) use ($previousStartDate, $previousEndDate) {
+                $query->whereBetween('analytics_date', [$previousStartDate, $previousEndDate]);
+            }])
             ->get();
 
         $previousImpressions = $previousPosts->sum(function ($post) {
@@ -122,7 +126,9 @@ final class AnalyticsController extends Controller
         $posts = $team->posts()
             ->whereBetween('published_at', [$startDate, $endDate])
             ->where('is_draft', false)
-            ->with(['analytics'])
+            ->with(['analytics' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('analytics_date', [$startDate, $endDate]);
+            }])
             ->get();
 
         $data = [];
@@ -162,8 +168,9 @@ final class AnalyticsController extends Controller
                 ->whereHas('channels', function ($query) use ($platform) {
                     $query->where('platform', $platform);
                 })
-                ->with(['analytics' => function ($query) use ($platform) {
-                    $query->where('platform', $platform);
+                ->with(['analytics' => function ($query) use ($platform, $startDate, $endDate) {
+                    $query->where('platform', $platform)
+                        ->whereBetween('analytics_date', [$startDate, $endDate]);
                 }])
                 ->get();
 
@@ -202,7 +209,12 @@ final class AnalyticsController extends Controller
         $query = $team->posts()
             ->whereBetween('published_at', [$startDate, $endDate])
             ->where('is_draft', false)
-            ->with(['analytics', 'channels']);
+            ->with([
+                'analytics' => function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('analytics_date', [$startDate, $endDate]);
+                },
+                'channels',
+            ]);
 
         // Apply filters
         if ($request->get('platform') && $request->get('platform') !== 'all') {
@@ -242,7 +254,9 @@ final class AnalyticsController extends Controller
         $posts = $team->posts()
             ->whereBetween('published_at', [$startDate, $endDate])
             ->where('is_draft', false)
-            ->with(['analytics'])
+            ->with(['analytics' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('analytics_date', [$startDate, $endDate]);
+            }])
             ->get();
 
         // Get top posts for each metric to ensure variety

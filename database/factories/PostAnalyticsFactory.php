@@ -23,6 +23,8 @@ final class PostAnalyticsFactory extends Factory
      */
     public function definition(): array
     {
+        $platform = $this->faker->randomElement(['twitter', 'facebook', 'instagram', 'linkedin', 'reddit', 'youtube', 'tiktok', 'pinterest', 'snapchat', 'discord', 'twitch']);
+
         $impressions = $this->faker->numberBetween(1000, 50000);
         $engagement = $this->faker->numberBetween(50, 2000);
         $likes = (int) ($engagement * 0.7);
@@ -36,8 +38,8 @@ final class PostAnalyticsFactory extends Factory
 
         return [
             'post_id' => Post::factory(),
-            'channel_id' => Channel::factory(),
-            'platform' => $this->faker->randomElement(['twitter', 'facebook', 'instagram', 'linkedin', 'reddit', 'youtube', 'tiktok', 'pinterest', 'snapchat', 'discord', 'twitch']),
+            'channel_id' => Channel::factory()->state(fn () => ['platform' => $platform]),
+            'platform' => $platform,
             'platform_post_id' => $this->faker->uuid(),
             'impressions' => $impressions,
             'reach' => (int) ($impressions * 0.8),

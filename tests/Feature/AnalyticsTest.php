@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\User;
 use App\Models\Channel;
 use App\Models\PostAnalytics;
+use Illuminate\Support\Facades\Auth;
 
 beforeEach(function () {
     $this->user = User::factory()->withPersonalTeam()->create();
