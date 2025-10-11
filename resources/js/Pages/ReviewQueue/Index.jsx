@@ -71,7 +71,7 @@ export default function ReviewQueueIndex() {
       case 'pending':
         return <Icon icon='lucide:clock' className='h-4 w-4 text-muted-foreground' />
       case 'approved':
-        return <Icon icon='lucide:check-circle' className='h-4 w-4 text-primary' />
+        return <Icon icon='lucide:check-circle' className='h-4 w-4 text-muted-foreground' />
       case 'rejected':
         return <Icon icon='lucide:x-circle' className='h-4 w-4 text-muted-foreground' />
       default:
@@ -84,7 +84,7 @@ export default function ReviewQueueIndex() {
       case 'pending':
         return <Badge variant='outline'>Pending</Badge>
       case 'approved':
-        return <Badge variant='outline' className='text-primary border-primary'>Approved</Badge>
+        return <Badge variant='outline'>Approved</Badge>
       case 'rejected':
         return <Badge variant='outline'>Rejected</Badge>
       default:
@@ -218,19 +218,21 @@ export default function ReviewQueueIndex() {
                     </div>
 
                     {/* Review Details */}
-                    <div className='space-y-3 flex flex-col items-center justify-center'>
-                      <div className='flex items-center gap-2'>
-                        {getStatusIcon(post.review_status)}
-                        <span className='text-sm font-medium'>
-                          {post.review_status === 'pending' && 'Pending approval'}
-                          {post.review_status === 'approved' && 'Approved'}
-                          {post.review_status === 'rejected' && 'Rejected'}
-                        </span>
+                    <div className='space-y-3 flex flex-col items-center justify-center text-center'>
+                      <div className='flex flex-col items-center gap-2'>
+                        <div className='flex items-center gap-2'>
+                          {getStatusIcon(post.review_status)}
+                          <span className='text-sm font-medium'>
+                            {post.review_status === 'pending' && 'Pending approval'}
+                            {post.review_status === 'approved' && 'Approved'}
+                            {post.review_status === 'rejected' && 'Rejected'}
+                          </span>
+                        </div>
+                        
+                        {getReviewFlagIcon(post.review_flags)}
                       </div>
                       
-                      {getReviewFlagIcon(post.review_flags)}
-                      
-                      <div className='text-sm space-y-1 text-center'>
+                      <div className='text-sm space-y-1'>
                         <p><span className='font-medium'>Created by:</span> {post.user.name}</p>
                         <p>
                           <span className='font-medium'>
@@ -251,12 +253,13 @@ export default function ReviewQueueIndex() {
 
                     {/* Action Buttons */}
                     <div className='flex flex-col gap-2'>
-                      <div className='flex gap-2'>
+                      <div className='flex gap-2 justify-end'>
                         <Dialog open={isApprovalDialogOpen} onOpenChange={setIsApprovalDialogOpen}>
                           <DialogTrigger asChild>
                             <Button
-                              variant='default'
+                              variant='outline'
                               size='sm'
+                              className='bg-green-100 text-green-800 hover:bg-green-200 border-green-200'
                               onClick={() => setSelectedPost(post)}
                             >
                               <Icon icon='lucide:check' className='h-4 w-4 mr-1' />
@@ -289,6 +292,8 @@ export default function ReviewQueueIndex() {
                                 Cancel
                               </Button>
                               <Button
+                                variant='outline'
+                                className='bg-green-100 text-green-800 hover:bg-green-200 border-green-200'
                                 onClick={() => handleApprove(selectedPost)}
                               >
                                 Approve Post
@@ -300,8 +305,9 @@ export default function ReviewQueueIndex() {
                         <Dialog open={isRejectionDialogOpen} onOpenChange={setIsRejectionDialogOpen}>
                           <DialogTrigger asChild>
                             <Button
-                              variant='destructive'
+                              variant='outline'
                               size='sm'
+                              className='bg-red-100 text-red-800 hover:bg-red-200 border-red-200'
                               onClick={() => setSelectedPost(post)}
                             >
                               <Icon icon='lucide:x' className='h-4 w-4 mr-1' />
@@ -335,7 +341,8 @@ export default function ReviewQueueIndex() {
                                 Cancel
                               </Button>
                               <Button
-                                variant='destructive'
+                                variant='outline'
+                                className='bg-red-100 text-red-800 hover:bg-red-200 border-red-200'
                                 onClick={() => handleReject(selectedPost)}
                                 disabled={!reviewNotes.trim()}
                               >
