@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -39,6 +40,11 @@ final class Post extends Model
     public function channels(): BelongsToMany
     {
         return $this->belongsToMany(Channel::class);
+    }
+
+    public function analytics(): HasMany
+    {
+        return $this->hasMany(PostAnalytics::class);
     }
 
     protected function casts(): array

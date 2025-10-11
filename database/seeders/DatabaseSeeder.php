@@ -21,5 +21,8 @@ final class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
             'password' => Hash::make('password'),
         ]);
+
+        // Seed analytics data if posts and channels exist
+        $this->call(PostAnalyticsSeeder::class);
     }
 }

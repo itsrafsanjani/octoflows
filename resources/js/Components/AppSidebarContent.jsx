@@ -18,7 +18,7 @@ const navigationConfig = [
       { name: 'Dashboard', icon: 'lucide:layout-dashboard', route: 'dashboard', isActive: true },
       { name: 'Channels', icon: 'lucide:radio', route: 'channels.index' },
       { name: 'Posts', icon: 'lucide:file-text', route: 'posts.index' },
-      { name: 'Settings', icon: 'lucide:settings', route: 'profile.show' },
+      { name: 'Analytics', icon: 'lucide:bar-chart-3', route: 'analytics.index' },
       { name: 'Chat', icon: 'lucide:message-circle', route: 'chat.index' },
     ],
   },
