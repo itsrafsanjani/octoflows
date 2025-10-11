@@ -18,9 +18,9 @@
         {
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
-            "name": "Larasonic",
-            "url": "https://larasonic.com/",
-            "image": "https://larasonic.com/images/og.webp",
+            "name": "OctaFlows",
+            "url": "https://octaflows.com/",
+            "image": "https://octaflows.com/images/og.webp",
             "description": "A modern Laravel SaaS starter kit for the RILT stack. Clone the repo, start building scalable and maintainable applications quickly.",
             "applicationCategory": "DeveloperTool",
             "operatingSystem": "All",

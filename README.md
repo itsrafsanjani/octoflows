@@ -1,10 +1,10 @@
-# Larasonic 🚀
+# OctaFlows 🚀
 
-![Larasonic](public/images/og.webp)
+![OctaFlows](public/images/og.webp)
 
-Larasonic is a modern, open-source SaaS starter kit with Laravel, React, Shadcn, TailwindCSS, and Inertia.
+OctaFlows is a modern, open-source SaaS starter kit with Laravel, React, Shadcn, TailwindCSS, and Inertia.
 
-![GitHub Repo stars](https://img.shields.io/github/stars/pushpak1300/Larasonic?style=for-the-badge) [![Licence](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE.md) [![Github-sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA)](https://github.com/sponsors/pushpak1300)
+![GitHub Repo stars](https://img.shields.io/github/stars/pushpak1300/OctaFlows?style=for-the-badge) [![Licence](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE.md) [![Github-sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA)](https://github.com/sponsors/pushpak1300)
 
 ## ✨ Features
 
@@ -24,8 +24,8 @@ Larasonic is a modern, open-source SaaS starter kit with Laravel, React, Shadcn,
 
 ```bash
 # Clone the repo
-git clone git@github.com:shipfastlabs/larasonic-react.git
-cd Larasonic-react
+git clone git@github.com:shipfastlabs/octaflows-react.git
+cd OctaFlows-react
 
 # Install dependencies
 docker run --rm \
@@ -45,8 +45,8 @@ cp .env.example .env
 
 ```bash
 # Clone the repo
-git clone git@github.com:shipfastlabs/larasonic-react.git
-cd Larasonic-react
+git clone git@github.com:shipfastlabs/octaflows-react.git
+cd OctaFlows-react
 
 # Install dependencies
 composer install
@@ -58,11 +58,11 @@ cp .env.example .env
 composer run setup
 ```
 
-For detailed installation instructions and documentation, visit [docs.larasonic.com](https://docs.larasonic.com).
+For detailed installation instructions and documentation, visit [docs.octaflows.com](https://docs.octaflows.com).
 
 ## Hosting
 
-Proudly hosted and sponsored by [Sevalla.com](https://sevalla.com/?ref=larasonic).
+Proudly hosted and sponsored by [Sevalla.com](https://sevalla.com/?ref=octaflows).
 
 ## Security
 

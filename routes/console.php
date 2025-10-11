@@ -12,3 +12,9 @@ Schedule::daily()
 
 Schedule::everyMinute()
     ->command('posts:publish-scheduled');
+
+// Schedule trending data fetch every 12 hours
+Schedule::everyTwelveHours()
+    ->command('trending:fetch')
+    ->withoutOverlapping()
+    ->runInBackground();

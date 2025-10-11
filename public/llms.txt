@@ -2,7 +2,7 @@
 ✨ Using PHP 8.3+, Laravel 11, Inertia 2.0 and Tailwind CSS 4+
 Ship faster production-ready applications 10x faster with starter kit powered by Laravel Jetstream, Inertia V2, and Shadcn/ui.
 
-[View Demo](https://larasonic.com/dashboard) [Github](https://github.com/shipfastlabs/larasonic-react)
+[View Demo](https://octaflows.com/dashboard) [Github](https://github.com/shipfastlabs/octaflows-react)
 
 Trusted by developers worldwide
 
@@ -64,17 +64,17 @@ Beautiful admin panel powered by FilamentPHP with CRUD operations, charts, and d
 
 This is just the beginning. Regular updates bring new features, integrations, and improvements to supercharge your development.
 
-[Documentation](https://docs.larasonic.com) [Roadmap](https://github.com/shipfastlabs/larasonic-react/discussions/categories/roadmap)
+[Documentation](https://docs.octaflows.com) [Roadmap](https://github.com/shipfastlabs/octaflows-react/discussions/categories/roadmap)
 
 ## Proudly Open Source 🤑
 
-Larasonic is and will always be open source. No hidden fees, no premium features.
+OctaFlows is and will always be open source. No hidden fees, no premium features.
 
 #### $0
 
 Free Forever
 
-[Get Started](https://larasonic.com/dashboard)
+[Get Started](https://octaflows.com/dashboard)
 
 Want to support the development?
 
@@ -82,9 +82,9 @@ Want to support the development?
 
 ## Frequently Asked Questions
 
-### Is Larasonic really free?
+### Is OctaFlows really free?
 
-Yes! Larasonic is completely free and open source under the MIT license. You can use it for personal or commercial projects without any restrictions. Feel free to star the repo for showing your intrest.
+Yes! OctaFlows is completely free and open source under the MIT license. You can use it for personal or commercial projects without any restrictions. Feel free to star the repo for showing your intrest.
 
 ### How can I contribute?
 
@@ -94,13 +94,13 @@ Yes! Larasonic is completely free and open source under the MIT license. You can
 
 You're already blazing fast with Laravel.
 
-Larasonic is about to make your shipping speed supersonic. 🚀
+OctaFlows is about to make your shipping speed supersonic. 🚀
 
-[View on GitHub](https://github.com/shipfastlabs/larasonic-react)
+[View on GitHub](https://github.com/shipfastlabs/octaflows-react)
 
-$ git clone https://github.com/shipfastlabs/larasonic-react
+$ git clone https://github.com/shipfastlabs/octaflows-react
 
-$ cd larasonic && composer install
+$ cd octaflows && composer install
 
 $ ./vendor/bin/sail up
 

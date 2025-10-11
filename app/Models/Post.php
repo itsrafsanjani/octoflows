@@ -25,6 +25,21 @@ final class Post extends Model
         'published_at',
         'is_picked_by_job',
         'is_draft',
+        'review_status',
+        'reviewed_by',
+        'reviewed_at',
+        'review_notes',
+        'review_flags',
+    ];
+
+    protected $casts = [
+        'media' => 'array',
+        'platform_configs' => 'array',
+        'published_at' => 'datetime',
+        'is_picked_by_job' => 'boolean',
+        'is_draft' => 'boolean',
+        'reviewed_at' => 'datetime',
+        'review_flags' => 'array',
     ];
 
     public function team(): BelongsTo
@@ -47,14 +62,8 @@ final class Post extends Model
         return $this->hasMany(PostAnalytics::class);
     }
 
-    protected function casts(): array
+    public function reviewer(): BelongsTo
     {
-        return [
-            'media' => 'array',
-            'platform_configs' => 'array',
-            'published_at' => 'datetime',
-            'is_picked_by_job' => 'boolean',
-            'is_draft' => 'boolean',
-        ];
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 }

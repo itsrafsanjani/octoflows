@@ -1,6 +1,6 @@
 # Privacy Policy
 
-At LaraSonic, we value your privacy. This policy outlines how we collect, use, and protect your information.
+At OctaFlows, we value your privacy. This policy outlines how we collect, use, and protect your information.
 
 ### 1. Information We Collect
 
@@ -28,4 +28,4 @@ We may update this privacy policy from time to time. Any changes will be posted 
 
 ### 7. Contact Us
 
-For questions about this privacy policy, please contact us at support@larasonic.com.
+For questions about this privacy policy, please contact us at support@octaflows.com.

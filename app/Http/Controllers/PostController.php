@@ -26,6 +26,45 @@ final class PostController extends Controller
     }
 
     /**
+     * Display the calendar view for scheduling posts.
+     */
+    public function calendar(): Response
+    {
+        $posts = auth()->user()->currentTeam->posts()
+            ->with('channels')
+            ->whereNotNull('published_at')
+            ->orderBy('published_at')
+            ->get()
+            ->map(fn ($post): array => [
+                'id' => $post->id,
+                'content' => $post->content,
+                'published_at' => $post->published_at,
+                'is_draft' => $post->is_draft,
+                'post_type' => $post->post_type,
+                'channels' => $post->channels->map(fn ($channel): array => [
+                    'id' => $channel->id,
+                    'name' => $channel->name,
+                    'platform' => $channel->platform,
+                ])->toArray(),
+                'media' => $post->media,
+            ]);
+
+        $channels = auth()->user()->currentTeam->channels()->get()->map(fn ($channel): array => [
+            'id' => $channel->id,
+            'name' => $channel->name,
+            'platform' => $channel->platform,
+            'type' => $channel->type,
+            'label' => $channel->title,
+        ]);
+
+        return inertia('Posts/Calendar', [
+            'posts' => $posts,
+            'channels' => $channels,
+            'groupedChannels' => $channels->groupBy('platform'),
+        ]);
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create(): Response
@@ -81,6 +120,7 @@ final class PostController extends Controller
             'media' => $media,
             'published_at' => $isScheduled ? $validated['published_at'] : now(),
             'is_draft' => $isDraft,
+            'review_status' => $isDraft ? 'pending' : 'pending', // All posts start as pending for review
         ]);
 
         $post->channels()->attach($channels);
