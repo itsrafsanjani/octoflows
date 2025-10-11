@@ -10,6 +10,7 @@ use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\User\OauthController;
+use App\Http\Controllers\ReviewQueueController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\User\LoginLinkController;
 
@@ -51,4 +52,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::resource('/channels', ChannelController::class);
 
     Route::resource('/posts', PostController::class);
+
+    // Review Queue Routes
+    Route::get('/review-queue', [ReviewQueueController::class, 'index'])->name('review-queue.index');
+    Route::post('/posts/{post}/approve', [ReviewQueueController::class, 'approve'])->name('posts.approve');
+    Route::post('/posts/{post}/reject', [ReviewQueueController::class, 'reject'])->name('posts.reject');
+    Route::patch('/posts/{post}/flags', [ReviewQueueController::class, 'updateFlags'])->name('posts.update-flags');
 });
