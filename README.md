@@ -66,7 +66,7 @@ Proudly hosted and sponsored by [Sevalla.com](https://sevalla.com/?ref=octaflows
 
 ## Security
 
-Report vulnerabilities to pushpak1300@gmail.com
+Report vulnerabilities to rafsan@wedevs.com
 
 ## License
 
